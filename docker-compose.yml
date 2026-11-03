@@ -1,0 +1,22 @@
+
+version: '3.8'
+
+services:
+  processing-app:
+    image: java-processing-app
+    build: .
+    network_mode: "host"
+    ipc: host
+    user: "${CURRENT_UID:-1000}:${CURRENT_GID:-1000}"
+    environment:
+      - DISPLAY=${DISPLAY}
+      - WAYLAND_DISPLAY=${WAYLAND_DISPLAY}
+      - XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR}
+    volumes:
+      # Compartilha o servidor gráfico (X11 e Wayland)
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:/tmp/${WAYLAND_DISPLAY}:ro
+      # Mapeia a pasta local onde estão os XMLs para dentro do container
+      - ./dados_xml:/app/data
+    devices:
+      - /dev/dri:/dev/dri # Aceleração por Hardware gráfica (GPU)
