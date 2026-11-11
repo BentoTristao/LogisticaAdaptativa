@@ -7,7 +7,6 @@ package grafo.core;
  * manter compatibilidade com os contratos dos algoritmos da seção 8.
  */
 public record Vertice(int id) {
-
     public Vertice {
         if (id < 0) {
             throw new IllegalArgumentException("O id do vértice não pode ser negativo.");

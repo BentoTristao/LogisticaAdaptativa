@@ -8,7 +8,6 @@ package grafo.core;
  * vértices extremos.
  */
 public record Aresta(int id, int origem, int destino) {
-
     public Aresta {
         if (id < 0) {
             throw new IllegalArgumentException("O id da aresta não pode ser negativo.");

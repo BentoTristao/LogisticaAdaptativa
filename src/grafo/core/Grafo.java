@@ -12,7 +12,6 @@ import java.util.Objects;
  * compartilham alterações de pesos.
  */
 public final class Grafo {
-
     private final int linhas;
     private final int colunas;
     private final int verticeInicio;
@@ -24,13 +23,7 @@ public final class Grafo {
      * Cria um grafo a partir das arestas existentes na grade.
      * Os ids das arestas devem ser contíguos, começando em zero.
      */
-    public Grafo(
-            int linhas,
-            int colunas,
-            List<Aresta> arestas,
-            int verticeInicio,
-            int verticeDestino
-    ) {
+    public Grafo(int linhas, int colunas, List<Aresta> arestas, int verticeInicio, int verticeDestino) {
         if (linhas <= 0 || colunas <= 0) {
             throw new IllegalArgumentException("Linhas e colunas devem ser positivas.");
         }
@@ -81,9 +74,7 @@ public final class Grafo {
         this.verticeInicio = verticeInicio;
         this.verticeDestino = verticeDestino;
         this.arestas = List.copyOf(arestasPorId);
-        this.adjacencias = listasAdjacencia.stream()
-                .map(List::copyOf)
-                .toList();
+        this.adjacencias = listasAdjacencia.stream().map(List::copyOf).toList();
     }
 
     public int numVertices() {

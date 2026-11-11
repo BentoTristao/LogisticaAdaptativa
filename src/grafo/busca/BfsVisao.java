@@ -11,7 +11,6 @@ import java.util.Queue;
 
 /** BFS usada para descobrir os vértices dentro do raio de visão do Entregador. */
 public final class BfsVisao {
-
     private BfsVisao() {
         // Classe utilitária.
     }

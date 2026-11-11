@@ -11,12 +11,11 @@ import java.util.PriorityQueue;
 
 /** Busca A* usando a distância de Manhattan como heurística da grade. */
 public final class AStar {
-
     private AStar() {
         // Classe utilitária.
     }
 
-    /**
+    /*
      * Calcula uma rota como ids de aresta.
      *
      * pesoHeuristica corresponde ao gene g2 do Entregador. Com valor zero,
@@ -24,20 +23,12 @@ public final class AStar {
      * a busca mais direcionada ao destino, mas podem deixar de garantir a rota
      * globalmente ótima (A* ponderado).
      */
-    public static List<Integer> caminho(
-            Grafo grafo,
-            double[] pesos,
-            int origem,
-            int destino,
-            double pesoHeuristica
-    ) {
+    public static List<Integer> caminho(Grafo grafo, double[] pesos, int origem, int destino, double pesoHeuristica) {
         Dijkstra.validarEntrada(grafo, pesos, origem, destino);
         if (!Double.isFinite(pesoHeuristica) || pesoHeuristica < 0.0) {
             throw new IllegalArgumentException("O peso da heurística deve ser finito e não negativo.");
         }
-        if (origem == destino) {
-            return List.of();
-        }
+        if (origem == destino) return List.of();
 
         int n = grafo.numVertices();
         double[] custo = new double[n];
@@ -93,12 +84,7 @@ public final class AStar {
         return distanciaManhattan * fator;
     }
 
-    private static List<Integer> reconstruirCaminho(
-            int origem,
-            int destino,
-            int[] anteriorVertice,
-            int[] anteriorAresta
-    ) {
+    private static List<Integer> reconstruirCaminho(int origem, int destino, int[] anteriorVertice, int[] anteriorAresta) {
         List<Integer> caminho = new ArrayList<>();
         int atual = destino;
         while (atual != origem) {
@@ -112,6 +98,5 @@ public final class AStar {
         return List.copyOf(caminho);
     }
 
-    private record Estado(int vertice, double g, double f) {
-    }
+    private record Estado(int vertice, double g, double f) {}
 }

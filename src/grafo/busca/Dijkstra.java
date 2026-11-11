@@ -11,7 +11,6 @@ import java.util.PriorityQueue;
 
 /** Busca o caminho de menor custo usando pesos não negativos. */
 public final class Dijkstra {
-
     private Dijkstra() {
         // Classe utilitária.
     }
@@ -20,12 +19,7 @@ public final class Dijkstra {
      * Retorna os ids das arestas do menor caminho entre origem e destino.
      * Retorna uma lista vazia quando o destino não é alcançável.
      */
-    public static List<Integer> caminho(
-            Grafo grafo,
-            double[] pesos,
-            int origem,
-            int destino
-    ) {
+    public static List<Integer> caminho(Grafo grafo, double[] pesos, int origem, int destino) {
         validarEntrada(grafo, pesos, origem, destino);
 
         int n = grafo.numVertices();
@@ -75,12 +69,7 @@ public final class Dijkstra {
         return reconstruirCaminho(origem, destino, anteriorVertice, anteriorAresta);
     }
 
-    private static List<Integer> reconstruirCaminho(
-            int origem,
-            int destino,
-            int[] anteriorVertice,
-            int[] anteriorAresta
-    ) {
+    private static List<Integer> reconstruirCaminho(int origem,int destino, int[] anteriorVertice, int[] anteriorAresta) {
         List<Integer> caminho = new ArrayList<>();
         int atual = destino;
 

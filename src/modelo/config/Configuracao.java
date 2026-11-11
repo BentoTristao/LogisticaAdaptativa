@@ -8,7 +8,6 @@ package modelo.config;
  * configuração (F1), conforme o contrato do projeto.
  */
 public class Configuracao {
-
     public int linhas = 30;
     public int colunas = 30;
     public double fracaoAtalhos = 0.10;
