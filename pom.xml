@@ -30,7 +30,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.6.3</version>
         <configuration>
-          <mainClass>app.Sketch</mainClass>
+          <mainClass>Main</mainClass>
         </configuration>
       </plugin>
     </plugins>
