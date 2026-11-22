@@ -1,25 +1,83 @@
-# LogisticaAdaptativa
+# Simulação de Co-Evolução e Busca em Grafos
 
-🚀 Como Rodar a Aplicação via Docker
+Projeto desenvolvido em **Java** que simula a co-evolução entre entregadores (agentes que utilizam algoritmos de busca como A* e Dijkstra) e obstáculos dinâmicos em um labirinto modelado como grafo, contando com interface gráfica e visualização em tempo real.
 
-1. Prepare os arquivos XML:
-Crie uma pasta chamada dados_xml na raiz do projeto no seu computador e coloque os arquivos XML que a aplicação precisa ler/gravar dentro dela.
-2. Se você usa Linux (X11 ou Wayland):
-Antes de iniciar o Docker, você precisa exportar as permissões do seu usuário para o container. Rode no terminal:bash
-export CURRENT_UID=$(id -u)
-export CURRENT_GID=$(id -g)
-xhost +local:docker 2>/dev/null || true
-Use o código com cuidado.
-Em seguida, suba a aplicação com:bash
-docker compose up --build
-Use o código com cuidado.
-3. Se você usa Windows ou macOS:
-	• Certifique-se de ter um servidor X instalado e rodando em segundo plano (como o VcXsrv no Windows ou XQuartz no Mac).
-	• Nas configurações do servidor X, marque a opção "Allow connections from clients" (Permitir conexões de clientes externos).
-	• Rode no terminal antes do Docker (ajustando para o IP da sua máquina local):bash
-# No Windows (PowerShell)
-$env:DISPLAY="seu_ip_local:0.0"
-# No macOS
-export DISPLAY=localhost:0
-Use o código com cuidado.
-	• Execute: docker compose up --build
+---
+
+## 📋 Pré-requisitos
+
+Certifique-se de ter instalado em sua máquina:
+* **Java Development Kit (JDK)** (versão 11 ou superior recomendada)
+* **Apache Maven** *(opcional, caso prefira compilar e gerenciar o projeto via `pom.xml`)*
+
+---
+
+## 📁 Estrutura do Projeto
+
+* `src/`: Código-fonte em Java (`Main.java` é a classe principal).
+* `data/`: Arquivos de configuração do sistema (`config.properties`).
+* `runWindows.bat` / `coreWindows.bat`: Scripts de compilação e execução para Windows.
+* `runLinux.sh` / `coreLinux.sh`: Scripts de compilação e execução para Linux.
+* `pom.xml`: Arquivo de configuração do Maven.
+
+---
+
+## 🚀 Como Executar
+
+### 🪟 No Windows
+
+O projeto já possui scripts prontos para facilitar a execução no Windows.
+
+1. Abra o **Prompt de Comando (CMD)** ou o **PowerShell** na pasta raiz do projeto.
+2. Execute o script principal:
+   ```cmd
+   runWindows.bat
+   ```
+   *(Alternativamente, você pode dar um duplo clique no arquivo `runWindows.bat` pelo Explorador de Arquivos.)*
+
+---
+
+### 🐧 No Linux
+
+Para executar o projeto no Linux utilizando os scripts fornecidos:
+
+1. Abra o **Terminal** na pasta raiz do projeto.
+2. Conceda permissão de execução aos arquivos `.sh`:
+   ```bash
+   chmod +x runLinux.sh coreLinux.sh
+   ```
+3. Execute o script principal:
+   ```bash
+   ./runLinux.sh
+   ```
+
+---
+
+## 🛠️ Execução Manual (Alternativa)
+
+Caso queira compilar e rodar o projeto manualmente sem utilizar os scripts `.bat` ou `.sh` (via linha de comando ou Maven):
+
+### Utilizando o Maven (`pom.xml`)
+```bash
+mvn clean compile exec:java -Dexec.mainClass="Main"
+```
+
+### Utilizando apenas o `javac` e `java`
+* **No Linux:**
+  ```bash
+  mkdir -p bin
+  javac -d bin $(find src -name "*.java")
+  java -cp bin Main
+  ```
+* **No Windows (PowerShell):**
+  ```powershell
+  mkdir -Force bin
+  javac -d bin (Get-ChildItem -Path src -Filter *.java -Recurse).FullName
+  java -cp bin Main
+  ```
+
+---
+
+## ⚙️ Configurações
+
+Os parâmetros iniciais da simulação podem ser ajustados diretamente na interface gráfica do sistema (`TelaConfig`) ou editando o arquivo `data/config.properties`.
