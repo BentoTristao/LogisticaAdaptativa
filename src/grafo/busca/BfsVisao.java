@@ -1,13 +1,3 @@
-package grafo.busca;
-
-import grafo.core.Aresta;
-import grafo.core.Grafo;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Queue;
 
 /** BFS usada para descobrir os vértices dentro do raio de visão do Entregador. */
 public final class BfsVisao {
