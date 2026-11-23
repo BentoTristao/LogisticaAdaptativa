@@ -16,8 +16,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * Tela de configuração dos parâmetros do labirinto, simulação e co-evolução.
- * Suporta imagem de fundo em data/ e não desenha formas geométricas como fundo.
+- Tela de configuração dos parâmetros do labirinto, simulação e co-evolução.
+- Suporta imagem de fundo em data/ e não desenha formas geométricas como fundo.
  */
 public class TelaConfig {
     private static final String ARQUIVO_CONFIG_PADRAO = "data/config.properties";
@@ -43,8 +43,7 @@ public class TelaConfig {
     private String mensagemStatus = "";
     private boolean statusErro = false;
 
-    // Uma variavel Runnable é uma variavel executa um bloco de código em outra thread.
-    // Não entendi o que a variavel Consumer faz.
+    // Callbacks de navegação: onConfirmarEIniciar recebe a Configuracao validada; onVoltarMenu retorna à tela anterior
     public TelaConfig(float larguraTela, float alturaTela, Configuracao configuracaoInicial, Consumer<Configuracao> onConfirmarEIniciar, Runnable onVoltarMenu) {
         this.configuracao = Objects.requireNonNullElseGet(configuracaoInicial, Configuracao::new);
 
@@ -92,6 +91,7 @@ public class TelaConfig {
         }));
     }
 
+    // Carregamento sob demanda na thread gráfica do Processing para garantir contexto OpenGL válido
     public void inicializarAssets(PApplet p) {
         if (assetsCarregados || p == null) return;
         assetsCarregados = true;
@@ -170,6 +170,7 @@ public class TelaConfig {
         }
     }
 
+    // Sincroniza os valores atuais dos sliders para o objeto Configuracao e valida as restrições de domínio
     private boolean aplicarEValidar() {
         configuracao.linhas = sliderLinhas.getValorInteiro();
         configuracao.colunas = sliderColunas.getValorInteiro();

@@ -9,8 +9,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 /**
- * Controle deslizante numérico para ajuste de parâmetros da simulação.
- * Utiliza imagens da pasta data/ para trilha e ponteiro quando disponíveis.
+- Controle deslizante numérico para ajuste de parâmetros da simulação.
+- Utiliza imagens da pasta data/ para trilha e ponteiro quando disponíveis.
  */
 public class Slider {
     private float x;
@@ -43,7 +43,7 @@ public class Slider {
     }
 
     /**
-     * Carrega texturas da trilha e do ponteiro a partir da pasta data/.
+- Carrega texturas da trilha e do ponteiro a partir da pasta data/.
      */
     public void carregarImagens(PApplet p, String caminhoTrilha, String caminhoPonteiro) {
         if (p == null) return;
@@ -63,6 +63,7 @@ public class Slider {
     public void desenhar(PApplet p) {
         if (p == null) return;
 
+        // Sincroniza o arrasto a cada frame caso o evento mouseReleased ocorra fora da área do componente
         if (arrastando) {
             if (p.mousePressed) {
                 atualizarPorPosicaoX(p.mouseX);
@@ -86,6 +87,7 @@ public class Slider {
         float proporcao = (float) ((valor - min) / (max - min));
         float ponteiroX = x + proporcao * largura;
 
+        // Renderiza texturas personalizadas ou recorre a primitivas vetoriais como fallback
         if (imagemTrilha != null) {
             float hTrilha = Math.max(6.0f, altura * 0.25f);
             p.image(imagemTrilha, x, trilhaY - hTrilha / 2.0f, largura, hTrilha);
@@ -112,6 +114,7 @@ public class Slider {
     }
 
     public boolean mousePressionado(float px, float py) {
+        // Aplica margem horizontal de 8px para facilitar o clique nas extremidades da trilha
         if (px >= x - 8.0f && px <= x + largura + 8.0f && py >= y && py <= y + altura) {
             arrastando = true;
             atualizarPorPosicaoX(px);
@@ -130,6 +133,7 @@ public class Slider {
         arrastando = false;
     }
 
+    // Mapeia a coordenada X normalizada [0, 1] para o intervalo numérico [min, max]
     private void atualizarPorPosicaoX(float px) {
         float t = (px - x) / largura;
         t = Math.max(0.0f, Math.min(1.0f, t));

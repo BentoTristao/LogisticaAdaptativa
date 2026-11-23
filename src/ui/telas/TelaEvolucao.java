@@ -20,14 +20,15 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 /**
- * Tela de acompanhamento da co-evolução em tempo real e análise de resultados.
- * Implementa CoEvolucaoListener respeitando o isolamento entre a thread de evolução
- * e a thread de renderização do Processing.
+- Tela de acompanhamento da co-evolução em tempo real e análise de resultados.
+- Implementa CoEvolucaoListener respeitando o isolamento entre a thread de evolução
+- e a thread de renderização do Processing.
  */
 public class TelaEvolucao implements CoEvolucaoListener {
     private final GraficoLinha graficoFitness;
     private final List<Botao> botoes = new ArrayList<>();
     private final List<EstatisticasGeracao> historico = new ArrayList<>();
+    // Fila thread-safe para transferir métricas da thread de CoEvolucao para a thread gráfica do Processing
     private final ConcurrentLinkedQueue<EstatisticasGeracao> filaRecebidos = new ConcurrentLinkedQueue<>();
 
     private CoEvolucao coEvolucao;
@@ -98,6 +99,7 @@ public class TelaEvolucao implements CoEvolucaoListener {
         }
     }
 
+    // Invocado pela thread em segundo plano de CoEvolucao; apenas enfileira sem tocar na UI
     @Override
     public void aoFimDaGeracao(EstatisticasGeracao estatisticas) {
         if (estatisticas != null) {
@@ -148,6 +150,7 @@ public class TelaEvolucao implements CoEvolucaoListener {
         p.popStyle();
     }
 
+    // Drena os resultados acumulados na thread de renderização antes de atualizar o gráfico
     private void consumirFilaPendentes() {
         EstatisticasGeracao est;
         while ((est = filaRecebidos.poll()) != null) {
