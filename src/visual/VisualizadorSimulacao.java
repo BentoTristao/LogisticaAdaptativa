@@ -26,9 +26,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Visualizador interativo de replay da simulação tick-a-tick.
- * Coordena as camadas de Grafo, Heatmap, Trilha e Névoa de Guerra utilizando
- * apenas imagens da pasta data/, linhas e tipografia.
+- Visualizador interativo de replay da simulação tick-a-tick.
+- Coordena as camadas de Grafo, Heatmap, Trilha e Névoa de Guerra utilizando
+- apenas imagens da pasta data/, linhas e tipografia.
  */
 public class VisualizadorSimulacao {
     private final CamadaGrafo camadaGrafo = new CamadaGrafo();
@@ -83,7 +83,7 @@ public class VisualizadorSimulacao {
     }
 
     /**
-     * Carrega um novo replay de simulação para exibição.
+- Carrega um novo replay de simulação para exibição.
      */
     public void carregarReplay(Grafo grafo, ReplaySimulacao replay, Configuracao configuracao, int[] heatmapContagem) {
         this.grafo = grafo;
@@ -147,6 +147,7 @@ public class VisualizadorSimulacao {
         }
 
         // Área do labirinto (esquerda) e painel de telemetria (direita)
+        // Calcula o tamanho da célula proporcionalmente para encaixar a grade mantendo células quadradas
         float areaMapaX = 32.0f;
         float areaMapaY = 64.0f;
         float areaMapaW = p.width * 0.66f;
@@ -179,7 +180,7 @@ public class VisualizadorSimulacao {
         // Calcula o conjunto de vértices já explorados até o tick atual
         Set<Integer> explorados = calcularVerticesExploradosAte(tickSeguro);
 
-        // Renderiza as 4 camadas ordenadas
+        // Renderiza as 4 camadas ordenadas (do plano de fundo para a sobreposição superior)
         camadaGrafo.desenhar(p, grafo, pesosNoTick, tiposAtivos, posEntregador, offsetX, offsetY, celula);
         camadaHeatmap.desenhar(p, grafo, heatmapContagem, offsetX, offsetY, celula);
         camadaTrilha.desenhar(p, grafo, posicoes, tickSeguro, rotaVigente, replay.ticksDosRecalculos(), offsetX, offsetY, celula);
@@ -196,6 +197,7 @@ public class VisualizadorSimulacao {
         p.popStyle();
     }
 
+    // Controla o avanço automático do replay baseado na taxa de frames e no multiplicador de velocidade
     private void atualizarPlayback() {
         if (!reproduzindo || replay == null) return;
 
@@ -218,6 +220,7 @@ public class VisualizadorSimulacao {
         }
     }
 
+    // Recupera a última rota recalculada cujo tick de disparo seja menor ou igual ao tick visualizado
     private List<Integer> obterRotaPlanejadaNoTick(int tick) {
         int[] ticksRec = replay.ticksDosRecalculos();
         List<int[]> rotas = replay.rotasPlanejadas();
@@ -244,6 +247,7 @@ public class VisualizadorSimulacao {
         return lista;
     }
 
+    // Acumula a união dos raios de visão (BFS) de todas as posições ocupadas pelo agente até tickLimite
     private Set<Integer> calcularVerticesExploradosAte(int tickLimite) {
         Set<Integer> explorados = new HashSet<>();
         int[] posicoes = replay.verticePorTick();

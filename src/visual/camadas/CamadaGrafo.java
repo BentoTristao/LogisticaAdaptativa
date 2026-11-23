@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Camada base de renderização do grafo, obstáculos ativos e agente Entregador.
- * Carrega sprites da pasta data/ sem desenhar formas geométricas.
+- Camada base de renderização do grafo, obstáculos ativos e agente Entregador.
+- Carrega sprites da pasta data/ sem desenhar formas geométricas.
  */
 public class CamadaGrafo {
     private PImage imagemFundoMapa;
@@ -62,6 +62,7 @@ public class CamadaGrafo {
         }
 
         // 1. Renderiza arestas e obstáculos ativos
+        // Classifica o estado visual da aresta priorizando a severidade (Bloqueio > Congestionamento > Desvio > Livre)
         for (Aresta aresta : grafo.arestas()) {
             int u = aresta.origem();
             int v = aresta.destino();
@@ -171,6 +172,7 @@ public class CamadaGrafo {
         }
     }
 
+    // Converte o índice do vértice para o ponto central (em pixels) da sua célula na grade
     public static float centroX(Grafo grafo, int vertice, float offsetX, float celula) {
         return offsetX + (grafo.colunaDe(vertice) + 0.5f) * celula;
     }

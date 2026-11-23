@@ -10,8 +10,8 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Camada responsável por exibir a trilha percorrida pelo Entregador,
- * a rota planejada pelo A* e os pontos de recálculo.
+- Camada responsável por exibir a trilha percorrida pelo Entregador,
+- a rota planejada pelo A* e os pontos de recálculo.
  */
 public class CamadaTrilha {
     private PImage imagemPasso;
@@ -62,6 +62,7 @@ public class CamadaTrilha {
             for (int t = 0; t < limite; t++) {
                 int v1 = verticePorTick[t];
                 int v2 = verticePorTick[t + 1];
+                // Ignora ticks em que o agente permaneceu parado (ex.: atravessando aresta de custo > 1)
                 if (v1 == v2) continue;
 
                 float x1 = CamadaGrafo.centroX(grafo, v1, offsetX, celula);
