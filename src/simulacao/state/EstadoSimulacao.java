@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Representa o estado instantâneo da simulação em um tick específico.
+- Representa o estado instantâneo da simulação em um tick específico.
  */
 public final class EstadoSimulacao {
     private final int tick;
@@ -25,6 +25,7 @@ public final class EstadoSimulacao {
         }
         Objects.requireNonNull(pesosAtuais, "Pesos atuais não podem ser nulos.");
 
+        // Realiza cópias defensivas para garantir que o snapshot do tick permaneça imutável
         this.tick = tick;
         this.posicaoEntregador = posicaoEntregador;
         this.pesosAtuais = pesosAtuais.clone();
