@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Leitor e escritor de arquivos para persistência de estatísticas (CSV) e configurações (.properties).
+- Leitor e escritor de arquivos para persistência de estatísticas (CSV) e configurações (.properties).
  */
 public final class ExporterIO {
     private ExporterIO() {
@@ -21,7 +21,7 @@ public final class ExporterIO {
     }
 
     /**
-     * Salva o histórico de gerações em um arquivo CSV formatado.
+- Salva o histórico de gerações em um arquivo CSV formatado.
      */
     public static void exportarEstatisticasCSV(List<EstatisticasGeracao> estatisticas, String caminhoArquivo) throws IOException {
         File file = new File(caminhoArquivo);
@@ -29,6 +29,7 @@ public final class ExporterIO {
             file.getParentFile().mkdirs();
         }
 
+        // Usa delimitador ';' e Locale.US (ponto decimal) para compatibilidade direta com Excel e ferramentas de análise
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write("geracao;melhorEntregador;mediaEntregador;melhorObstaculo;mediaObstaculo\n");
             for (EstatisticasGeracao e : estatisticas) {
@@ -38,7 +39,7 @@ public final class ExporterIO {
     }
 
     /**
-     * Grava as configurações vigentes em um arquivo no formato chave-valor.
+- Grava as configurações vigentes em um arquivo no formato chave-valor.
      */
     public static void salvarConfiguracao(Configuracao cfg, String caminhoArquivo) throws IOException {
         File file = new File(caminhoArquivo);
@@ -64,9 +65,10 @@ public final class ExporterIO {
     }
 
     /**
-     * Carrega as configurações salva no disco.
+- Carrega as configurações salva no disco.
      */
     public static Configuracao carregarConfiguracao(String caminhoArquivo) throws IOException {
+        // Inicia com valores padrão para preencher automaticamente chaves ausentes no arquivo
         Configuracao cfg = new Configuracao();
         File file = new File(caminhoArquivo);
         if (!file.exists()) return cfg;
@@ -75,6 +77,7 @@ public final class ExporterIO {
             String linha;
             while ((linha = reader.readLine()) != null) {
                 linha = linha.trim();
+                // Ignora linhas em branco e comentários iniciados por '#'
                 if (linha.isEmpty() || linha.startsWith("#")) continue;
 
                 String[] partes = linha.split("=");

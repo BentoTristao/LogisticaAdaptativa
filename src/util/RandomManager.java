@@ -3,7 +3,7 @@ package util;
 import java.util.Random;
 
 /**
- * Singleton determinístico para gestão de sementes aleatórias em todo o sistema.
+- Singleton determinístico para gestão de sementes aleatórias em todo o sistema.
  */
 public final class RandomManager {
     private static volatile RandomManager instance;
@@ -16,15 +16,16 @@ public final class RandomManager {
     }
 
     /**
-     * Inicializa a instância Singleton com a semente definida na Configuracao.
+- Inicializa a instância Singleton com a semente definida na Configuracao.
      */
     public static synchronized void inicializar(long seed) {
         instance = new RandomManager(seed);
     }
 
     /**
-     * Retorna a instância ativa (se não inicializada, utiliza a seed padrão 42L).
+- Retorna a instância ativa (se não inicializada, utiliza a seed padrão 42L).
      */
+    // Implementa Double-Checked Locking para garantir inicialização lazy segura entre múltiplas threads
     public static RandomManager getInstance() {
         if (instance == null) {
             synchronized (RandomManager.class) {
@@ -37,15 +38,16 @@ public final class RandomManager {
     }
 
     /**
-     * Retorna o gerador global de aleatoriedade.
+- Retorna o gerador global de aleatoriedade.
      */
     public Random getRng() {
         return rngGlobal;
     }
 
     /**
-     * Deriva um gerador secundário garantindo isolamento entre threads e reprodutibilidade.
+- Deriva um gerador secundário garantindo isolamento entre threads e reprodutibilidade.
      */
+    // Combina a semente base com um identificador via XOR para produzir fluxos independentes e determinísticos
     public Random criarRngDerivado(long subSeed) {
         return new Random(this.sementeInicial ^ subSeed);
     }
