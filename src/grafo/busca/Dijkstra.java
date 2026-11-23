@@ -16,8 +16,8 @@ public final class Dijkstra {
     }
 
     /**
-     * Retorna os ids das arestas do menor caminho entre origem e destino.
-     * Retorna uma lista vazia quando o destino não é alcançável.
+- Retorna os ids das arestas do menor caminho entre origem e destino.
+- Retorna uma lista vazia quando o destino não é alcançável.
      */
     public static List<Integer> caminho(Grafo grafo, double[] pesos, int origem, int destino) {
         validarEntrada(grafo, pesos, origem, destino);
@@ -42,6 +42,7 @@ public final class Dijkstra {
             if (atual.custo() > distancia[u]) {
                 continue;
             }
+            // Como os pesos são não negativos, o primeiro pop do destino já garante o menor custo
             if (u == destino) {
                 break;
             }
@@ -69,6 +70,7 @@ public final class Dijkstra {
         return reconstruirCaminho(origem, destino, anteriorVertice, anteriorAresta);
     }
 
+    // Remonta a sequência de arestas do destino até a origem e inverte para o sentido correto
     private static List<Integer> reconstruirCaminho(int origem,int destino, int[] anteriorVertice, int[] anteriorAresta) {
         List<Integer> caminho = new ArrayList<>();
         int atual = destino;
@@ -87,6 +89,7 @@ public final class Dijkstra {
         return List.copyOf(caminho);
     }
 
+    // Validação compartilhada com o AStar; permite +Infinity para representar arestas bloqueadas
     static void validarEntrada(Grafo grafo, double[] pesos, int origem, int destino) {
         if (grafo == null) {
             throw new IllegalArgumentException("O grafo não pode ser nulo.");
