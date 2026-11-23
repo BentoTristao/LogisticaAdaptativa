@@ -51,6 +51,7 @@ public class CoEvolucao implements Runnable {
         this.listener = listener;
         this.rng = new Random(cfg.seed);
 
+        // Mantém histórico dos 30 melhores indivíduos para evitar perda de memória evolutiva
         this.hofEntregador = new HallOfFame<>(30);
         this.hofObstaculo = new HallOfFame<>(30);
     }
@@ -82,6 +83,7 @@ public class CoEvolucao implements Runnable {
     public void run() {
         inicializarPopulacoes();
 
+        // Calcula o tempo base sem obstáculos para normalizar o fitness e limitar o horizonte de ticks
         List<Integer> rotaIdeal = Dijkstra.caminho(grafo, grafo.pesosBase(), grafo.verticeInicio(), grafo.verticeDestino());
         double tIdeal = Math.max(1.0, (double) rotaIdeal.size());
         int maxTick = (int) (4 * tIdeal);
@@ -126,7 +128,7 @@ public class CoEvolucao implements Runnable {
             hofEntregador.adicionar(popEntregador.get(melhorEntIdx), fitEnt[melhorEntIdx]);
             hofObstaculo.adicionar(popObstaculo.get(melhorObsIdx), fitObs[melhorObsIdx]);
 
-            // Heatmap de contagem de bloqueios por aresta
+            // Agrega a frequência de obstáculos por aresta para visualização em heatmap
             int[] bloqueiosPorAresta = new int[grafo.numArestas()];
             for (GenomaObstaculos go : popObstaculo) {
                 go.plano().obstaculos().forEach(o -> {
@@ -136,12 +138,21 @@ public class CoEvolucao implements Runnable {
                 });
             }
 
-            // Notifica Listener com estatísticas
+            // Notifica Listener com estatísticas da geração atual
             if (listener != null) {
                 double mediaEnt = calcularMedia(fitEnt);
                 double mediaObs = calcularMedia(fitObs);
 
-                EstatisticasGeracao est = new EstatisticasGeracao(geracao, fitEnt[melhorEntIdx], mediaEnt, fitObs[melhorObsIdx], mediaObs, popEntregador.get(melhorEntIdx), popObstaculo.get(melhorObsIdx).plano(), bloqueiosPorAresta);
+                EstatisticasGeracao est = new EstatisticasGeracao(
+                        geracao,
+                        fitEnt[melhorEntIdx],
+                        mediaEnt,
+                        fitObs[melhorObsIdx],
+                        mediaObs,
+                        popEntregador.get(melhorEntIdx),
+                        popObstaculo.get(melhorObsIdx).plano(),
+                        bloqueiosPorAresta
+                );
                 listener.aoFimDaGeracao(est);
             }
 
@@ -167,11 +178,16 @@ public class CoEvolucao implements Runnable {
         popObstaculo = new ArrayList<>();
         for (int i = 0; i < cfg.tamPopObstaculo; i++) {
             GenomaObstaculos go = GenomaObstaculos.aleatorio(grafo, cfg.maxObstaculos, 100, rng);
+            // Garante que os obstáculos gerados não isolem completamente a origem do destino
             go = new GenomaObstaculos(AnalisadorConectividade.reparar(grafo, go.plano(), cfg.orcamentoDesastre));
             popObstaculo.add(go);
         }
     }
 
+    /**
+     * Balanceia o pareamento em 50% contra campeões históricos (Hall of Fame)
+     * e 50% contra indivíduos da população ativa.
+     */
     private GenomaEntregador sortearOponenteEntregador() {
         if (!hofEntregador.estaVazio() && rng.nextBoolean()) {
             return hofEntregador.sortear(rng);
@@ -225,6 +241,7 @@ public class CoEvolucao implements Runnable {
                     : p1;
 
             filho = Mutacao.uniforme(filho, cfg.taxaMutacao, grafo, maxTick, rng);
+            // Revalida conectividade após mutação para manter planos de obstáculos factíveis
             filho = new GenomaObstaculos(AnalisadorConectividade.reparar(grafo, filho.plano(), cfg.orcamentoDesastre));
 
             nova.add(filho);
@@ -232,6 +249,9 @@ public class CoEvolucao implements Runnable {
         return nova;
     }
 
+    /**
+     * Suspende a execução da thread enquanto o estado pausado estiver ativo.
+     */
     private synchronized void checarPausa() {
         while (pausado && rodando) {
             try {
