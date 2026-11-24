@@ -20,9 +20,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 /**
-- Tela de acompanhamento da co-evolução em tempo real e análise de resultados.
-- Implementa CoEvolucaoListener respeitando o isolamento entre a thread de evolução
-- e a thread de renderização do Processing.
+ * Tela de acompanhamento da co-evolução em tempo real e análise de resultados.
+ * Implementa CoEvolucaoListener respeitando o isolamento entre a thread de evolução
+ * e a thread de renderização do Processing.
  */
 public class TelaEvolucao implements CoEvolucaoListener {
     private final GraficoLinha graficoEntregador;
@@ -102,7 +102,7 @@ public class TelaEvolucao implements CoEvolucaoListener {
         graficoObstaculo.carregarFundo(p, "data/fundo_grafico.png");
 
         for (Botao b : botoes) {
-            b.carregarImagens(p, "data/btn_normal.png", "data/btn_hover.png");
+            b.carregarImagemHover(p, "data/btn_hover.png");
         }
     }
 

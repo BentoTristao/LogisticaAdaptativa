@@ -16,8 +16,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
-- Tela de configuração dos parâmetros do labirinto, simulação e co-evolução.
-- Suporta imagem de fundo em data/ e não desenha formas geométricas como fundo.
+ * Tela de configuração dos parâmetros do labirinto, simulação e co-evolução.
+ * Suporta imagem de fundo em data/ e não desenha formas geométricas como fundo.
  */
 public class TelaConfig {
     private static final String ARQUIVO_CONFIG_PADRAO = "data/config.properties";
@@ -105,7 +105,7 @@ public class TelaConfig {
             s.carregarImagens(p, "data/slider_trilha.png", "data/slider_ponteiro.png");
         }
         for (Botao b : botoes) {
-            b.carregarImagens(p, "data/btn_normal.png", "data/btn_hover.png");
+            b.carregarImagemHover(p, "data/btn_hover.png");
         }
     }
 

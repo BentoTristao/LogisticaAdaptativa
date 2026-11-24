@@ -2,21 +2,16 @@ package ui.telas;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
-import processing.core.PImage;
 import ui.componentes.Botao;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
-- Tela inicial do sistema.
-- Carrega fundo e logotipo da pasta data/ quando presentes, sem formas geométricas decorativas.
+ * Tela inicial do sistema.
  */
 public class TelaMenu {
     private final List<Botao> botoes = new ArrayList<>();
-    private PImage imagemFundo;
-    private PImage imagemLogo;
     private boolean assetsCarregados = false;
 
     // Recebe callbacks de navegação disparados ao clicar nos botões principais do menu
@@ -32,22 +27,12 @@ public class TelaMenu {
         botoes.add(new Botao(centroX, inicioY + espacamento * 2.0f, btnLargura, btnAltura, "Sair", onSair));
     }
 
-    /**
-- Carrega as imagens da pasta data/ caso existam no diretório do projeto.
-     */
     public void inicializarAssets(PApplet p) {
         if (assetsCarregados || p == null) return;
         assetsCarregados = true;
 
-        if (new File("data/fundo_menu.png").exists()) {
-            imagemFundo = p.loadImage("data/fundo_menu.png");
-        }
-        if (new File("data/logo.png").exists()) {
-            imagemLogo = p.loadImage("data/logo.png");
-        }
-
         for (Botao botao : botoes) {
-            botao.carregarImagens(p, "data/btn_normal.png", "data/btn_hover.png");
+            botao.carregarImagemHover(p, "data/btn_hover.png");
         }
     }
 
@@ -58,25 +43,14 @@ public class TelaMenu {
         p.pushStyle();
         p.background(18, 22, 30);
 
-        if (imagemFundo != null) {
-            p.image(imagemFundo, 0, 0, p.width, p.height);
-        }
+        p.textAlign(PConstants.CENTER, PConstants.CENTER);
+        p.fill(240, 244, 248);
+        p.textSize(34);
+        p.text("Logística Adaptativa", p.width / 2.0f, p.height * 0.24f);
 
-        // Renderiza o logotipo customizado ou exibe título tipográfico como fallback
-        if (imagemLogo != null) {
-            float logoX = (p.width - imagemLogo.width) / 2.0f;
-            float logoY = p.height * 0.14f;
-            p.image(imagemLogo, logoX, logoY);
-        } else {
-            p.textAlign(PConstants.CENTER, PConstants.CENTER);
-            p.fill(240, 244, 248);
-            p.textSize(34);
-            p.text("Logística Adaptativa", p.width / 2.0f, p.height * 0.24f);
-
-            p.fill(140, 195, 235);
-            p.textSize(16);
-            p.text("Algoritmos em Grafos & Co-evolução Competitiva", p.width / 2.0f, p.height * 0.31f);
-        }
+        p.fill(140, 195, 235);
+        p.textSize(16);
+        p.text("Algoritmos em Grafos & Co-evolução Competitiva", p.width / 2.0f, p.height * 0.31f);
 
         for (Botao botao : botoes) {
             botao.desenhar(p);
