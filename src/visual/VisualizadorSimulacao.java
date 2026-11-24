@@ -26,9 +26,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
-- Visualizador interativo de replay da simulação tick-a-tick.
-- Coordena as camadas de Grafo, Heatmap, Trilha e Névoa de Guerra utilizando
-- apenas imagens da pasta data/, linhas e tipografia.
+ * Visualizador interativo de replay da simulação tick-a-tick.
+ * Coordena as camadas de Grafo, Heatmap, Trilha e Névoa de Guerra utilizando
+ * apenas imagens da pasta data/, linhas e tipografia.
  */
 public class VisualizadorSimulacao {
     private final CamadaGrafo camadaGrafo = new CamadaGrafo();
@@ -41,11 +41,18 @@ public class VisualizadorSimulacao {
     private Botao botaoVelocidade;
     private Botao botaoNevoa;
     private Botao botaoHeatmap;
+    private Botao botaoAlternarGeracao;
 
     private Grafo grafo;
     private ReplaySimulacao replay;
+    private ReplaySimulacao replayFinal;
+    private ReplaySimulacao replayGeracao1;
+    private boolean exibindoGeracao1 = false;
+
     private Configuracao configuracao;
     private int[] heatmapContagem;
+    private int[] heatmapFinal;
+    private int[] heatmapGeracao1;
 
     private int tickAtual = 0;
     private boolean reproduzindo = true;
@@ -57,9 +64,10 @@ public class VisualizadorSimulacao {
 
     public VisualizadorSimulacao(float larguraTela, float alturaTela, Runnable onVoltar) {
         float rodapeY = alturaTela - 66.0f;
-        float btnW = 132.0f;
+        float btnW = 122.0f;
+        float btnWGeracao = 148.0f;
         float btnH = 40.0f;
-        float gap = 12.0f;
+        float gap = 10.0f;
         float startX = 32.0f;
 
         botaoPlayPause = new Botao(startX, rodapeY, btnW, btnH, "Pausar", this::alternarPlayPause);
@@ -69,7 +77,10 @@ public class VisualizadorSimulacao {
         botaoVelocidade = new Botao(startX + (btnW + gap) * 4, rodapeY, btnW, btnH, "Vel: 1x", this::alternarVelocidade);
         botaoNevoa = new Botao(startX + (btnW + gap) * 5, rodapeY, btnW, btnH, "Névoa: ON", this::alternarNevoa);
         botaoHeatmap = new Botao(startX + (btnW + gap) * 6, rodapeY, btnW, btnH, "Heatmap: OFF", this::alternarHeatmap);
-        Botao botaoVoltar = new Botao(startX + (btnW + gap) * 7, rodapeY, btnW, btnH, "Voltar", () -> {
+        botaoAlternarGeracao = new Botao(startX + (btnW + gap) * 7, rodapeY, btnWGeracao, btnH, "Gen: Final", this::alternarGeracao);
+
+        float xVoltar = startX + (btnW + gap) * 7 + btnWGeracao + gap;
+        Botao botaoVoltar = new Botao(xVoltar, rodapeY, btnW, btnH, "Voltar", () -> {
             reproduzindo = false;
             if (onVoltar != null) {
                 onVoltar.run();
@@ -78,23 +89,41 @@ public class VisualizadorSimulacao {
 
         botoes.addAll(List.of(
                 botaoPlayPause, botaoAnterior, botaoProximo, botaoReiniciar,
-                botaoVelocidade, botaoNevoa, botaoHeatmap, botaoVoltar
+                botaoVelocidade, botaoNevoa, botaoHeatmap, botaoAlternarGeracao, botaoVoltar
         ));
     }
 
     /**
-- Carrega um novo replay de simulação para exibição.
+     * Carrega um novo replay de simulação para exibição (Geração Final).
      */
     public void carregarReplay(Grafo grafo, ReplaySimulacao replay, Configuracao configuracao, int[] heatmapContagem) {
         this.grafo = grafo;
+        this.replayFinal = replay;
         this.replay = replay;
         this.configuracao = configuracao != null ? configuracao : new Configuracao();
-        this.heatmapContagem = heatmapContagem != null ? heatmapContagem.clone() : null;
+        this.heatmapFinal = heatmapContagem != null ? heatmapContagem.clone() : null;
+        this.heatmapContagem = this.heatmapFinal;
+        this.exibindoGeracao1 = false;
 
         this.tickAtual = 0;
         this.contadorFrames = 0;
         this.reproduzindo = true;
         this.botaoPlayPause.setRotulo("Pausar");
+        if (this.botaoAlternarGeracao != null) {
+            this.botaoAlternarGeracao.setRotulo("Gen: Final");
+        }
+    }
+
+    /**
+     * Define o replay e o heatmap da 1ª geração para comparação A/B.
+     */
+    public void setReplayGeracao1(ReplaySimulacao replayGeracao1, int[] heatmapGeracao1) {
+        this.replayGeracao1 = replayGeracao1;
+        this.heatmapGeracao1 = heatmapGeracao1 != null ? heatmapGeracao1.clone() : null;
+    }
+
+    public void setReplayGeracao1(ReplaySimulacao replayGeracao1) {
+        setReplayGeracao1(replayGeracao1, null);
     }
 
     public void inicializarAssets(PApplet p) {
@@ -147,7 +176,6 @@ public class VisualizadorSimulacao {
         }
 
         // Área do labirinto (esquerda) e painel de telemetria (direita)
-        // Calcula o tamanho da célula proporcionalmente para encaixar a grade mantendo células quadradas
         float areaMapaX = 32.0f;
         float areaMapaY = 64.0f;
         float areaMapaW = p.width * 0.66f;
@@ -197,7 +225,6 @@ public class VisualizadorSimulacao {
         p.popStyle();
     }
 
-    // Controla o avanço automático do replay baseado na taxa de frames e no multiplicador de velocidade
     private void atualizarPlayback() {
         if (!reproduzindo || replay == null) return;
 
@@ -220,7 +247,6 @@ public class VisualizadorSimulacao {
         }
     }
 
-    // Recupera a última rota recalculada cujo tick de disparo seja menor ou igual ao tick visualizado
     private List<Integer> obterRotaPlanejadaNoTick(int tick) {
         int[] ticksRec = replay.ticksDosRecalculos();
         List<int[]> rotas = replay.rotasPlanejadas();
@@ -247,7 +273,6 @@ public class VisualizadorSimulacao {
         return lista;
     }
 
-    // Acumula a união dos raios de visão (BFS) de todas as posições ocupadas pelo agente até tickLimite
     private Set<Integer> calcularVerticesExploradosAte(int tickLimite) {
         Set<Integer> explorados = new HashSet<>();
         int[] posicoes = replay.verticePorTick();
@@ -268,7 +293,18 @@ public class VisualizadorSimulacao {
         p.fill(110, 210, 255);
         p.textSize(17);
         p.text("Telemetria da Partida", px, y);
-        y += passo * 1.3f;
+        y += passo * 1.15f;
+
+        // Indicador da geração em exibição
+        p.textSize(13);
+        if (exibindoGeracao1) {
+            p.fill(250, 210, 65);
+            p.text("Exibindo: 1ª Geração (Inicial)", px, y);
+        } else {
+            p.fill(90, 235, 165);
+            p.text("Exibindo: Geração Final (Adaptada)", px, y);
+        }
+        y += passo * 1.15f;
 
         p.fill(235, 240, 246);
         p.textSize(14);
@@ -276,7 +312,7 @@ public class VisualizadorSimulacao {
         y += passo;
 
         ResultadoSimulacao res = replay.resultado();
-        String estadoPartida = (tickSeguro < maxTick)? "Em andamento": (res.chegou() ? "Destino alcançado!" : "Tempo esgotado (T_max)");
+        String estadoPartida = (tickSeguro < maxTick) ? "Em andamento" : (res.chegou() ? "Destino alcançado!" : "Tempo esgotado (T_max)");
 
         p.fill(res.chegou() && tickSeguro == maxTick ? 80 : 225, 225, 160);
         p.text("Estado: " + estadoPartida, px, y);
@@ -378,5 +414,19 @@ public class VisualizadorSimulacao {
     private void alternarHeatmap() {
         camadaHeatmap.alternar();
         botaoHeatmap.setRotulo(camadaHeatmap.isAtiva() ? "Heatmap: ON" : "Heatmap: OFF");
+    }
+
+    private void alternarGeracao() {
+        if (replayGeracao1 == null || replayFinal == null) return;
+
+        exibindoGeracao1 = !exibindoGeracao1;
+        this.replay = exibindoGeracao1 ? replayGeracao1 : replayFinal;
+        this.heatmapContagem = exibindoGeracao1 ? heatmapGeracao1 : heatmapFinal;
+
+        this.tickAtual = 0;
+        this.contadorFrames = 0;
+        this.reproduzindo = true;
+        this.botaoPlayPause.setRotulo("Pausar");
+        this.botaoAlternarGeracao.setRotulo(exibindoGeracao1 ? "Gen: 1ª (Inicial)" : "Gen: Final");
     }
 }
