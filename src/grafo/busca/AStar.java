@@ -17,12 +17,12 @@ public final class AStar {
     }
 
     /*
-     * Calcula uma rota como ids de aresta.
+- Calcula uma rota como ids de aresta.
      *
-     * pesoHeuristica corresponde ao gene g2 do Entregador. Com valor zero,
-     * o comportamento é equivalente ao Dijkstra. Valores maiores que 1 tornam
-     * a busca mais direcionada ao destino, mas podem deixar de garantir a rota
-     * globalmente ótima (A* ponderado).
+- pesoHeuristica corresponde ao gene g2 do Entregador. Com valor zero,
+- o comportamento é equivalente ao Dijkstra. Valores maiores que 1 tornam
+- a busca mais direcionada ao destino, mas podem deixar de garantir a rota
+- globalmente ótima (A* ponderado).
      */
     public static List<Integer> caminho(Grafo grafo, double[] pesos, int origem, int destino, double pesoHeuristica) {
         Dijkstra.validarEntrada(grafo, pesos, origem, destino);
@@ -40,12 +40,14 @@ public final class AStar {
         Arrays.fill(anteriorAresta, -1);
         custo[origem] = 0.0;
 
+        // Ordena estados pelo menor custo total estimado f(n) = g(n) + h(n)
         PriorityQueue<Estado> fila = new PriorityQueue<>((a, b) -> Double.compare(a.f(), b.f()));
         fila.add(new Estado(origem, 0.0, heuristica(grafo, origem, destino, pesoHeuristica)));
 
         while (!fila.isEmpty()) {
             Estado atual = fila.poll();
             int u = atual.vertice();
+            // Descarta entradas obsoletas da fila quando um caminho menor já foi processado
             if (atual.g() > custo[u]) {
                 continue;
             }
@@ -55,6 +57,7 @@ public final class AStar {
 
             for (Aresta aresta : grafo.arestasDe(u)) {
                 double peso = pesos[aresta.id()];
+                // Arestas com peso infinito representam bloqueios intransponíveis no tick atual
                 if (Double.isInfinite(peso)) {
                     continue;
                 }
@@ -85,6 +88,7 @@ public final class AStar {
         return distanciaManhattan * fator;
     }
 
+    // Retrocede pelos predecessores a partir do destino e inverte a lista para obter a ordem origem -> destino
     private static List<Integer> reconstruirCaminho(int origem, int destino, int[] anteriorVertice, int[] anteriorAresta) {
         List<Integer> caminho = new ArrayList<>();
         int atual = destino;

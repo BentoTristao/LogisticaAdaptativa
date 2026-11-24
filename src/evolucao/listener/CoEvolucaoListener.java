@@ -12,4 +12,4 @@ public interface CoEvolucaoListener {
 
     // Chamado ao término do limite de gerações ou por interrupção do usuário.
     void aoTerminar();
-}
+}//

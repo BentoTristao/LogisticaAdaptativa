@@ -11,8 +11,8 @@ import java.util.Objects;
 import java.util.Random;
 
 /**
- * Genoma do Planejador de Obstáculos. Envolve um PlanoObstaculos e fornece
- * métodos para inicialização e mutação aleatória de planos.
+- Genoma do Planejador de Obstáculos. Envolve um PlanoObstaculos e fornece
+- métodos para inicialização e mutação aleatória de planos.
  */
 public record GenomaObstaculos(PlanoObstaculos plano) {
     public GenomaObstaculos {
@@ -20,7 +20,7 @@ public record GenomaObstaculos(PlanoObstaculos plano) {
     }
 
     /**
-     * Gera um genoma com lista aleatória de obstáculos dentro do orçamento e limite máximo.
+- Gera um genoma com lista aleatória de obstáculos dentro do orçamento e limite máximo.
      */
     public static GenomaObstaculos aleatorio(Grafo grafo, int maxObstaculos, int maxTick, Random rng) {
         Objects.requireNonNull(grafo, "O grafo não pode ser nulo.");
@@ -31,6 +31,8 @@ public record GenomaObstaculos(PlanoObstaculos plano) {
             return new GenomaObstaculos(PlanoObstaculos.vazio());
         }
 
+        // Sorteia entre 1 e maxObstaculos eventos, distribuídos aleatoriamente nas arestas e ticks da simulação
+        // (o ajuste de orçamento e conectividade é aplicado posteriormente pelo AnalisadorConectividade)
         int qtd = rng.nextInt(maxObstaculos) + 1;
         TipoObstaculo[] tipos = TipoObstaculo.values();
         List<Obstaculo> lista = new ArrayList<>();

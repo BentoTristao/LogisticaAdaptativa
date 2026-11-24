@@ -16,8 +16,8 @@ public final class BfsVisao {
     }
 
     /**
-     * Retorna os vértices alcançáveis em até k arestas a partir da origem,
-     * incluindo a própria origem. A ordem é a ordem de visita da BFS.
+- Retorna os vértices alcançáveis em até k arestas a partir da origem,
+- incluindo a própria origem. A ordem é a ordem de visita da BFS.
      */
     public static List<Integer> bfsAteRaio(Grafo grafo, int origem, int k) {
         if (grafo == null) {
@@ -30,6 +30,7 @@ public final class BfsVisao {
             throw new IllegalArgumentException("O raio de visão não pode ser negativo.");
         }
 
+        // Controla tanto o estado de visitação (-1 = não visitado) quanto a profundidade em saltos
         int[] distancia = new int[grafo.numVertices()];
         Arrays.fill(distancia, -1);
 
@@ -42,10 +43,12 @@ public final class BfsVisao {
             int atual = fila.remove();
             visitados.add(atual);
 
+            // Limita a expansão da fronteira ao atingir o raio máximo de percepção do agente
             if (distancia[atual] == k) {
                 continue;
             }
 
+            // Expande pela topologia do grafo independentemente de bloqueios ou pesos nas arestas
             for (Aresta aresta : grafo.arestasDe(atual)) {
                 int vizinho = aresta.outro(atual);
                 if (distancia[vizinho] == -1) {

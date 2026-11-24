@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Gerador de labirintos baseados em Árvore Geradora Mínima (Kruskal)
- * com reabertura de atalhos em grades M x N.
+- Gerador de labirintos baseados em Árvore Geradora Mínima (Kruskal)
+- com reabertura de atalhos em grades M x N.
  */
 public final class GeradorLabirinto {
     private GeradorLabirinto() {
@@ -19,13 +19,13 @@ public final class GeradorLabirinto {
     }
 
     /**
-     * Gera um labirinto navegável a partir de uma grade M x N.
+- Gera um labirinto navegável a partir de uma grade M x N.
      *
-     * param linhas        Quantidade de linhas da grade (M >= 2).
-     * param colunas       Quantidade de colunas da grade (N >= 2).
-     * param fracaoAtalhos Porcentagem de paredes a serem removidas (0.0 a 1.0).
-     * param seed          Semente determinística para reprodutibilidade.
-     * return Instância imutável do Grafo gerado.
+- param linhas        Quantidade de linhas da grade (M >= 2).
+- param colunas       Quantidade de colunas da grade (N >= 2).
+- param fracaoAtalhos Porcentagem de paredes a serem removidas (0.0 a 1.0).
+- param seed          Semente determinística para reprodutibilidade.
+- return Instância imutável do Grafo gerado.
      */
     public static Grafo gerar(int linhas, int colunas, double fracaoAtalhos, long seed) {
         if (linhas < 2 || colunas < 2) {
@@ -39,6 +39,7 @@ public final class GeradorLabirinto {
         int numVertices = linhas * colunas;
 
         // 1. Gera todas as conexões possíveis da grade (4 vizinhos)
+        // Percorre apenas direita e baixo para evitar duplicar arestas não-direcionadas
         List<ArestaCandidata> candidatas = new ArrayList<>();
         for (int r = 0; r < linhas; r++) {
             for (int c = 0; c < colunas; c++) {
@@ -57,6 +58,7 @@ public final class GeradorLabirinto {
         }
 
         // 2. Kruskal: Ordena arestas pelo peso aleatório
+        // Garante uma árvore geradora (labirinto perfeito, sem ciclos e totalmente conectado)
         candidatas.sort(Comparator.comparingDouble(a -> a.pesoAleatorio));
 
         UnionFind uf = new UnionFind(numVertices);
@@ -72,6 +74,7 @@ public final class GeradorLabirinto {
         }
 
         // 3. Adiciona atalhos (reabre % de arestas fora da árvore)
+        // Introduz ciclos controlados para criar rotas alternativas contra obstáculos dinâmicos
         Collections.shuffle(arestasForaArvore, rng);
         int qtdAtalhos = (int) Math.round(arestasForaArvore.size() * fracaoAtalhos);
 
@@ -87,6 +90,7 @@ public final class GeradorLabirinto {
             arestasFinais.add(new Aresta(id, ac.u, ac.v));
         }
 
+        // Define canto superior esquerdo (0) como origem e inferior direito como destino
         int vInicio = 0;
         int vDestino = numVertices - 1;
 
@@ -95,6 +99,7 @@ public final class GeradorLabirinto {
 
     private record ArestaCandidata(int u, int v, double pesoAleatorio) {}
 
+    // Estrutura de conjuntos disjuntos para detectar ciclos em tempo quase constante no Kruskal
     private static class UnionFind {
         private final int[] parent;
 
@@ -105,6 +110,7 @@ public final class GeradorLabirinto {
             }
         }
 
+        // Busca o representante do componente aplicando compressão de caminho
         public int find(int i) {
             if (parent[i] == i) return i;
             return parent[i] = find(parent[i]);
@@ -121,4 +127,3 @@ public final class GeradorLabirinto {
         }
     }
 }
-

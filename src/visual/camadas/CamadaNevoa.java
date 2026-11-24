@@ -10,8 +10,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Camada de Névoa de Guerra (visão parcial via BFS até raio k).
- * Utiliza texturas da pasta data/ ou hachuras lineares como fallback, sem formas geométricas.
+- Camada de Névoa de Guerra (visão parcial via BFS até raio k).
+- Utiliza texturas da pasta data/ ou hachuras lineares como fallback, sem formas geométricas.
  */
 public class CamadaNevoa {
     private PImage imagemNevoaDesconhecida;
@@ -35,6 +35,7 @@ public class CamadaNevoa {
         if (!ativa || p == null || grafo == null) return;
         inicializarAssets(p);
 
+        // Classifica cada célula em um de três estados: visível agora, já explorada ou desconhecida
         Set<Integer> visiveisAgora = new HashSet<>(BfsVisao.bfsAteRaio(grafo, posicaoEntregador, raioVisao));
         Set<Integer> explorados = verticesExplorados != null ? verticesExplorados : Set.of();
 

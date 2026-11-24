@@ -8,11 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Acumulador de ticks e eventos durante a execução da simulação para geração do ReplaySimulacao.
+- Acumulador de ticks e eventos durante a execução da simulação para geração do ReplaySimulacao.
  */
 public class GravadorReplay {
     private final List<Integer> posicoesPorTick;
     private final List<Obstaculo> ativacoes;
+    // Pareados por índice: cada entrada em ticksDosRecalculos corresponde à rota em rotasPlanejadas
     private final List<int[]> rotasPlanejadas;
     private final List<Integer> ticksDosRecalculos;
 
@@ -43,6 +44,7 @@ public class GravadorReplay {
         }
     }
 
+    // Converte as listas acumuladas em arrays primitivos compactos para reprodução na UI
     public ReplaySimulacao finalizar(ResultadoSimulacao resultado) {
         int[] verticeArr = posicoesPorTick.stream().mapToInt(Integer::intValue).toArray();
         int[] ticksRec = ticksDosRecalculos.stream().mapToInt(Integer::intValue).toArray();

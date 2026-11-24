@@ -8,8 +8,8 @@ import java.io.File;
 import java.util.Objects;
 
 /**
- * Componente de botão interativo para Processing.
- * Carrega texturas de estado normal e hover da pasta data/ sem desenhar formas geométricas.
+- Componente de botão interativo para Processing.
+- Carrega texturas de estado normal e hover da pasta data/ sem desenhar formas geométricas.
  */
 public class Botao {
     private float x;
@@ -38,7 +38,7 @@ public class Botao {
     }
 
     /**
-     * Carrega texturas da pasta data/ caso os arquivos existam.
+- Carrega texturas da pasta data/ caso os arquivos existam.
      */
     public void carregarImagens(PApplet p, String caminhoNormal, String caminhoHover) {
         if (p == null) return;
@@ -59,6 +59,7 @@ public class Botao {
         if (p == null) return;
 
         boolean hover = habilitado && contemPonto(p.mouseX, p.mouseY);
+        // Isola configurações de alinhamento, fonte e cores para não afetar outros elementos da tela
         p.pushStyle();
 
         PImage texturaAtual = (hover && imagemHover != null) ? imagemHover : imagemNormal;
@@ -81,6 +82,7 @@ public class Botao {
         float centroY = y + altura / 2.0f;
         p.text(rotulo, centroX, centroY);
 
+        // Fallback visual quando não há textura carregada: sublinha o rótulo no estado hover
         if (texturaAtual == null && hover) {
             float meiaLarguraTexto = Math.min(largura * 0.45f, p.textWidth(rotulo) / 2.0f + 8.0f);
             p.stroke(110, 210, 255);

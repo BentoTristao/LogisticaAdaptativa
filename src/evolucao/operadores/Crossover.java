@@ -73,4 +73,4 @@ public final class Crossover {
 
         return new GenomaObstaculos(new PlanoObstaculos(filho));
     }
-}
+}//

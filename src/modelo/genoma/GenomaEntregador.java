@@ -5,10 +5,11 @@ import java.util.Objects;
 import java.util.Random;
 
 /**
- * Vetor de 5 genes numéricos reais [g1, g2, g3, g4, g5] que definem
- * a estratégia de navegação do Entregador.
+- Vetor de 5 genes numéricos reais [g1, g2, g3, g4, g5] que definem
+- a estratégia de navegação do Entregador.
  */
 public record GenomaEntregador(double[] genes) {
+    // Limites de domínio para cada parâmetro comportamental do agente
     public static final double G1_MIN = 0.0, G1_MAX = 3.0;
     public static final double G2_MIN = 0.0, G2_MAX = 3.0;
     public static final double G3_MIN = 0.0, G3_MAX = 5.0;
@@ -20,6 +21,7 @@ public record GenomaEntregador(double[] genes) {
         if (genes.length != 5) {
             throw new IllegalArgumentException("O genoma do entregador deve conter exatamente 5 genes.");
         }
+        // Cópia defensiva para garantir imutabilidade do record e normalização dentro dos limites
         genes = genes.clone();
         clampGenes(genes);
     }
@@ -31,7 +33,7 @@ public record GenomaEntregador(double[] genes) {
     public double g5() { return genes[4]; }
 
     /**
-     * Gera um genoma aleatório dentro dos limites operacionais.
+- Gera um genoma aleatório dentro dos limites operacionais.
      */
     public static GenomaEntregador aleatorio(Random rng) {
         Objects.requireNonNull(rng, "O gerador aleatório não pode ser nulo.");
@@ -45,6 +47,7 @@ public record GenomaEntregador(double[] genes) {
         return new GenomaEntregador(g);
     }
 
+    // Restringe os valores após operadores genéticos (como crossover BLX-alfa e mutação gaussiana)
     private static void clampGenes(double[] g) {
         g[0] = Math.max(G1_MIN, Math.min(G1_MAX, g[0]));
         g[1] = Math.max(G2_MIN, Math.min(G2_MAX, g[1]));
@@ -53,6 +56,7 @@ public record GenomaEntregador(double[] genes) {
         g[4] = Math.max(G5_MIN, Math.min(G5_MAX, g[4]));
     }
 
+    // Sobrescritos para comparar o conteúdo do array double[] em vez da referência de memória
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

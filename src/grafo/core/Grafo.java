@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Estrutura imutável de um grafo não-direcionado derivado de uma grade.
+- Estrutura imutável de um grafo não-direcionado derivado de uma grade.
  *
- * Os pesos não fazem parte da estrutura do grafo: cada simulação mantém seu
- * próprio double[], indexado pelo id da aresta. Assim, simulações paralelas não
- * compartilham alterações de pesos.
+- Os pesos não fazem parte da estrutura do grafo: cada simulação mantém seu
+- próprio double[], indexado pelo id da aresta. Assim, simulações paralelas não
+- compartilham alterações de pesos.
  */
 public final class Grafo {
     private final int linhas;
@@ -20,8 +20,8 @@ public final class Grafo {
     private final List<List<Aresta>> adjacencias;
 
     /**
-     * Cria um grafo a partir das arestas existentes na grade.
-     * Os ids das arestas devem ser contíguos, começando em zero.
+- Cria um grafo a partir das arestas existentes na grade.
+- Os ids das arestas devem ser contíguos, começando em zero.
      */
     public Grafo(int linhas, int colunas, List<Aresta> arestas, int verticeInicio, int verticeDestino) {
         if (linhas <= 0 || colunas <= 0) {
@@ -39,6 +39,7 @@ public final class Grafo {
         validarVertice(verticeDestino, quantidadeVertices, "vértice de destino");
         Objects.requireNonNull(arestas, "A lista de arestas não pode ser nula.");
 
+        // Pré-aloca com nulls para indexar cada aresta diretamente pelo seu id e detectar lacunas/duplicatas
         List<Aresta> arestasPorId = new ArrayList<>(arestas.size());
         for (int i = 0; i < arestas.size(); i++) {
             arestasPorId.add(null);
@@ -61,6 +62,7 @@ public final class Grafo {
                 throw new IllegalArgumentException("Id de aresta duplicado: " + aresta.id());
             }
 
+            // Registra a mesma instância de aresta nas duas pontas por se tratar de grafo não-direcionado
             listasAdjacencia.get(aresta.origem()).add(aresta);
             listasAdjacencia.get(aresta.destino()).add(aresta);
         }
@@ -74,6 +76,7 @@ public final class Grafo {
         this.verticeInicio = verticeInicio;
         this.verticeDestino = verticeDestino;
         this.arestas = List.copyOf(arestasPorId);
+        // Congela tanto a lista externa quanto as listas internas para garantir imutabilidade profunda
         this.adjacencias = listasAdjacencia.stream().map(List::copyOf).toList();
     }
 
@@ -112,6 +115,7 @@ public final class Grafo {
         return linha * colunas + coluna;
     }
 
+    // Mapeamento inverso (row-major) de id linear do vértice para coordenadas (linha, coluna)
     public int linhaDe(int vertice) {
         validarVertice(vertice, numVertices(), "vértice");
         return vertice / colunas;

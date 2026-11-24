@@ -17,15 +17,16 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Ponto de entrada principal da aplicação (Processing PApplet).
- * Coordena a navegação entre telas e integra o front-end aos motores
- * de geração de grafos, simulação e co-evolução.
+- Ponto de entrada principal da aplicação (Processing PApplet).
+- Coordena a navegação entre telas e integra o front-end aos motores
+- de geração de grafos, simulação e co-evolução.
  */
 public class Main extends PApplet {
     public static final int LARGURA_TELA = 1280;
     public static final int ALTURA_TELA = 720;
     private static final String ARQUIVO_CONFIG_PADRAO = "data/config.properties";
 
+    // Máquina de estados que controla qual tela está ativa no loop de renderização
     private enum EstadoTela {MENU, CONFIGURACAO, EVOLUCAO, VISUALIZACAO}
 
     private EstadoTela estadoAtual = EstadoTela.MENU;
@@ -57,6 +58,7 @@ public class Main extends PApplet {
         this.configuracao = carregarConfiguracaoInicial();
         this.motorSimulacao = new MotorSimulacao();
 
+        // Instancia todas as telas e injeta os callbacks de transição de estado
         this.telaMenu = new TelaMenu(LARGURA_TELA, ALTURA_TELA, () -> iniciarNovaEvolucao(this.configuracao), () -> this.estadoAtual = EstadoTela.CONFIGURACAO, this::encerrarAplicacao);
 
         this.telaConfig = new TelaConfig(LARGURA_TELA, ALTURA_TELA, this.configuracao, this::iniciarNovaEvolucao, () -> this.estadoAtual = EstadoTela.MENU);
@@ -100,12 +102,14 @@ public class Main extends PApplet {
         }
     }
 
+    // Garante o encerramento limpo da thread em segundo plano ao fechar a janela
     @Override
     public void exit() {
         pararCoEvolucaoAtiva();
         super.exit();
     }
 
+    // Reinicia a seed determinística, constrói um novo labirinto e dispara a thread de co-evolução
     private void iniciarNovaEvolucao(Configuracao cfg) {
         if (cfg == null) {
             cfg = new Configuracao();
@@ -125,6 +129,7 @@ public class Main extends PApplet {
         this.estadoAtual = EstadoTela.EVOLUCAO;
     }
 
+    // Reexecuta o confronto entre os campeões da geração gravando o histórico tick-a-tick para o replay
     private void abrirVisualizacaoConfronto(EstatisticasGeracao estatistica) {
         if (estatistica == null || grafoAtual == null) {
             return;

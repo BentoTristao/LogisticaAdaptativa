@@ -8,8 +8,8 @@ import processing.core.PImage;
 import java.io.File;
 
 /**
- * Camada de mapa de calor (Heatmap) que destaca as arestas mais visadas
- * pela população de Planejadores de Obstáculos ao longo da evolução.
+- Camada de mapa de calor (Heatmap) que destaca as arestas mais visadas
+- pela população de Planejadores de Obstáculos ao longo da evolução.
  */
 public class CamadaHeatmap {
     private PImage imagemPontoCalor;
@@ -29,6 +29,7 @@ public class CamadaHeatmap {
         if (!ativa || p == null || grafo == null || contagemBloqueiosPorAresta == null) return;
         inicializarAssets(p);
 
+        // Encontra o pico de frequência para normalizar a intensidade de todas as arestas entre 0.0 e 1.0
         int maxContagem = 0;
         for (int c : contagemBloqueiosPorAresta) {
             if (c > maxContagem) {

@@ -54,7 +54,7 @@ public class GraficoLinha {
     }
 
     /**
-     * Carrega imagem de fundo opcional da pasta data/.
+- Carrega imagem de fundo opcional da pasta data/.
      */
     public void carregarFundo(PApplet p, String caminhoFundo) {
         if (p != null && caminhoFundo != null && new File(caminhoFundo).exists()) {
@@ -87,6 +87,7 @@ public class GraficoLinha {
             p.image(imagemFundo, x, y, largura, altura);
         }
 
+        // Reserva margens internas para rótulos dos eixos, título e legenda
         float margemEsq = 58.0f;
         float margemDir = 20.0f;
         float margemSup = 48.0f;
@@ -120,6 +121,7 @@ public class GraficoLinha {
         }
 
         double minValor = calcularValorMinimo();
+        // Normaliza o topo do eixo Y dinamicamente pelo maior valor observado nas 4 séries
         double maxValor = calcularValorMaximo();
         if (maxValor <= minValor) {
             maxValor = minValor + 1.0;
@@ -187,6 +189,7 @@ public class GraficoLinha {
 
         p.strokeWeight(espessura);
 
+        // Converte cada ponto (índice, valor) para coordenadas de tela com eixo Y invertido
         int n = valores.size();
         for (int i = 0; i < n - 1; i++) {
             float x1 = areaX + (i / (float) (n - 1)) * areaW;

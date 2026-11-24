@@ -17,4 +17,4 @@ public record EstatisticasGeracao(int geracao, double melhorEntregador, double m
         Objects.requireNonNull(melhorPlano, "O melhor plano não pode ser nulo.");
         contagemBloqueiosPorAresta = contagemBloqueiosPorAresta != null ? contagemBloqueiosPorAresta.clone() : new int[0];
     }
-}
+}//

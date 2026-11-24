@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tela inicial do sistema.
- * Carrega fundo e logotipo da pasta data/ quando presentes, sem formas geométricas decorativas.
+- Tela inicial do sistema.
+- Carrega fundo e logotipo da pasta data/ quando presentes, sem formas geométricas decorativas.
  */
 public class TelaMenu {
     private final List<Botao> botoes = new ArrayList<>();
@@ -19,7 +19,7 @@ public class TelaMenu {
     private PImage imagemLogo;
     private boolean assetsCarregados = false;
 
-    // Uma variavel Runnable é um bloco de código que executa em outra thread.
+    // Recebe callbacks de navegação disparados ao clicar nos botões principais do menu
     public TelaMenu(float larguraTela, float alturaTela, Runnable onIniciarSimulacao, Runnable onAbrirConfiguracoes, Runnable onSair) {
         float btnLargura = 260.0f;
         float btnAltura = 48.0f;
@@ -33,7 +33,7 @@ public class TelaMenu {
     }
 
     /**
-     * Carrega as imagens da pasta data/ caso existam no diretório do projeto.
+- Carrega as imagens da pasta data/ caso existam no diretório do projeto.
      */
     public void inicializarAssets(PApplet p) {
         if (assetsCarregados || p == null) return;
@@ -62,6 +62,7 @@ public class TelaMenu {
             p.image(imagemFundo, 0, 0, p.width, p.height);
         }
 
+        // Renderiza o logotipo customizado ou exibe título tipográfico como fallback
         if (imagemLogo != null) {
             float logoX = (p.width - imagemLogo.width) / 2.0f;
             float logoY = p.height * 0.14f;
