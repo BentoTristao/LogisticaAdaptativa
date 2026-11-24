@@ -58,9 +58,10 @@ public class CamadaGrafo {
         float alturaGrid = celula * grafo.linhas();
 
         if (imagemFundoMapa != null) {
-            p.image(imagemFundoMapa, offsetX, offsetY, larguraGrid, alturaGrid);
-        }
-
+    p.tint(95); // Deixa o mapa mais escuro e discreto
+    p.image(imagemFundoMapa, offsetX, offsetY, larguraGrid, alturaGrid);
+    p.noTint();
+}
         // 1. Renderiza arestas e obstáculos ativos
         // Classifica o estado visual da aresta priorizando a severidade (Bloqueio > Congestionamento > Desvio > Livre)
         for (Aresta aresta : grafo.arestas()) {
