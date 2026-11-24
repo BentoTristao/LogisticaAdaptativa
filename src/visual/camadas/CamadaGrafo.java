@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
-- Camada base de renderização do grafo, obstáculos ativos e agente Entregador.
-- Carrega sprites da pasta data/ sem desenhar formas geométricas.
+ * Camada base de renderização do grafo, obstáculos ativos e agente Entregador.
+ * Carrega sprites da pasta data/ sem desenhar formas geométricas.
  */
 public class CamadaGrafo {
     private PImage imagemFundoMapa;
@@ -93,7 +93,6 @@ public class CamadaGrafo {
                 p.line(x1, y1, x2, y2);
                 desenharSpriteObstaculo(p, imagemDesvio, "~", (x1 + x2) / 2.0f, (y1 + y2) / 2.0f, celula, 245, 210, 65);
             } else {
-                // Malha discreta para não poluir o visual
                 p.stroke(180, 200, 225, 45);
                 p.strokeWeight(1.0f);
                 p.line(x1, y1, x2, y2);
@@ -113,7 +112,6 @@ public class CamadaGrafo {
 
             if (imagemEntregador != null) {
                 float tamAgente = Math.max(32.0f, celula * 1.65f);
-                // Halo suave para destacar a scooter em qualquer fundo
                 p.noStroke();
                 p.fill(80, 240, 255, 65);
                 p.ellipse(ex, ey, tamAgente * 0.9f, tamAgente * 0.9f);
@@ -160,34 +158,7 @@ public class CamadaGrafo {
             p.text(rotuloFallback, cx, cy);
         }
     }
-    private void desenharSpriteObstaculo(PApplet p, PImage sprite, String simboloFallback, float mx, float my, float celula, int r, int g, int b) {
-        if (sprite != null) {
-            float tam = celula * 0.55f;
-            p.image(sprite, mx - tam / 2.0f, my - tam / 2.0f, tam, tam);
-        } else {
-            p.fill(r, g, b);
-            p.textAlign(PConstants.CENTER, PConstants.CENTER);
-            p.textSize(Math.max(10, celula * 0.38f));
-            p.text(simboloFallback, mx, my);
-        }
-    }
 
-    private void desenharMarcadorVertice(PApplet p, Grafo grafo, int vertice, float offsetX, float offsetY, float celula, PImage sprite, String rotuloFallback, int r, int g,int b) {
-        float cx = centroX(grafo, vertice, offsetX, celula);
-        float cy = centroY(grafo, vertice, offsetY, celula);
-
-        if (sprite != null) {
-            float tam = celula * 0.72f;
-            p.image(sprite, cx - tam / 2.0f, cy - tam / 2.0f, tam, tam);
-        } else {
-            p.fill(r, g, b);
-            p.textAlign(PConstants.CENTER, PConstants.CENTER);
-            p.textSize(Math.max(12, celula * 0.48f));
-            p.text(rotuloFallback, cx, cy);
-        }
-    }
-
-    // Converte o índice do vértice para o ponto central (em pixels) da sua célula na grade
     public static float centroX(Grafo grafo, int vertice, float offsetX, float celula) {
         return offsetX + (grafo.colunaDe(vertice) + 0.5f) * celula;
     }
