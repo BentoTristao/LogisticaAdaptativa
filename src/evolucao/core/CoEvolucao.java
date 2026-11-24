@@ -29,6 +29,7 @@ public class CoEvolucao implements Runnable {
     private final MotorSimulacao motor;
     private final CoEvolucaoListener listener;
     private final Random rng;
+   private ResultadoSimulacao resultadoGeracao1;
 
     private Thread thread;
     private volatile boolean rodando = false;
@@ -124,9 +125,22 @@ public class CoEvolucao implements Runnable {
             // 2. REGISTRO NO HALL OF FAME
             int melhorEntIdx = obterMelhorIndice(fitEnt);
             int melhorObsIdx = obterMelhorIndice(fitObs);
+        }
 
             hofEntregador.adicionar(popEntregador.get(melhorEntIdx), fitEnt[melhorEntIdx]);
             hofObstaculo.adicionar(popObstaculo.get(melhorObsIdx), fitObs[melhorObsIdx]);
+if (geracao == 1) {
+    this.resultadoGeracao1 = motor.executar(
+        grafo,
+        popEntregador.get(melhorEntIdx),
+        popObstaculo.get(melhorObsIdx).plano(),
+        cfg,
+        cfg.seed
+    );
+}
+
+public ResultadoSimulacao getReplayGeracao1() {
+    return replayGeracao1;
 
             // Agrega a frequência de obstáculos por aresta para visualização em heatmap
             int[] bloqueiosPorAresta = new int[grafo.numArestas()];
@@ -283,7 +297,8 @@ public class CoEvolucao implements Runnable {
         for (double v : vals) s += v;
         return vals.length > 0 ? s / vals.length : 0;
     }
-
+    public ResultadoSimulacao getResultadoGeracao1() {
+    return resultadoGeracao1;
     public boolean estaRodando() { return rodando; }
     public boolean estaPausado() { return pausado; }
 }
