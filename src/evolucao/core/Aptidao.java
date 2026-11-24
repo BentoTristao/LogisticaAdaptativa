@@ -62,6 +62,6 @@ public final class Aptidao {
      * Sobrecarga padrão para o fitness do Obstáculo.
      */
     public static double calcularFitnessObstaculo(ResultadoSimulacao res, double tIdeal) {
-        return calcularFitnessObstaculo(res, tIdeal, 1.0, 2.0, 3.0);
+        return calcularFitnessObstaculo(res, tIdeal, 1.0, 2.0, 0.5);
     }
 }

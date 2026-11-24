@@ -70,11 +70,11 @@ public class Botao {
         p.textSize(16);
 
         if (!habilitado) {
-            p.fill(130, 136, 148);
+            p.fill(0, 0, 0);
         } else if (hover) {
             p.fill(110, 210, 255);
         } else {
-            p.fill(240, 244, 248);
+            p.fill(0, 0, 0);
         }
 
         float centroX = x + largura / 2.0f;

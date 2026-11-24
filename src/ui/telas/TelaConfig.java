@@ -33,6 +33,7 @@ public class TelaConfig {
     private Slider sliderPopEntregador;
     private Slider sliderPopObstaculo;
     private Slider sliderGeracoes;
+    private Slider sliderMaxObstaculos;
     private Slider sliderOrcamento;
     private Slider sliderTaxaCrossover;
     private Slider sliderTaxaMutacao;
@@ -43,8 +44,7 @@ public class TelaConfig {
     private String mensagemStatus = "";
     private boolean statusErro = false;
 
-    // Uma variavel Runnable é uma variavel executa um bloco de código em outra thread.
-    // Não entendi o que a variavel Consumer faz.
+    // Callbacks de navegação: onConfirmarEIniciar recebe a Configuracao validada; onVoltarMenu retorna à tela anterior
     public TelaConfig(float larguraTela, float alturaTela, Configuracao configuracaoInicial, Consumer<Configuracao> onConfirmarEIniciar, Runnable onVoltarMenu) {
         this.configuracao = Objects.requireNonNullElseGet(configuracaoInicial, Configuracao::new);
 
@@ -58,21 +58,22 @@ public class TelaConfig {
         // Coluna Esquerda: Ambiente e Grafo
         sliderLinhas = new Slider(colEsqX, inicioY, sliderLargura, sliderAltura, "Linhas do Labirinto", 10, 60, configuracao.linhas, true);
         sliderColunas = new Slider(colEsqX, inicioY + passoY, sliderLargura, sliderAltura, "Colunas do Labirinto", 10, 60, configuracao.colunas, true);
-        sliderAtalhos = new Slider(colEsqX, inicioY + passoY * 2, sliderLargura, sliderAltura, "Fração de Atalhos", 0.0, 0.50, configuracao.fracaoAtalhos, false);
-        sliderRaioVisao = new Slider(colEsqX, inicioY + passoY * 3, sliderLargura, sliderAltura, "Raio de Visão (BFS k)", 1, 10, configuracao.raioVisao, true);
-        sliderOrcamento = new Slider(colEsqX, inicioY + passoY * 4, sliderLargura, sliderAltura, "Orçamento de Desastre", 5, 60, configuracao.orcamentoDesastre, true);
-        sliderSeed = new Slider(colEsqX, inicioY + passoY * 5, sliderLargura, sliderAltura, "Semente Aleatória (Seed)", 1, 9999, configuracao.seed, true);
+        sliderAtalhos = new Slider(colEsqX, inicioY + passoY * 2, sliderLargura, sliderAltura, "Fração de Atalhos", 0.05, 0.25, configuracao.fracaoAtalhos, false);
+        sliderRaioVisao = new Slider(colEsqX, inicioY + passoY * 3, sliderLargura, sliderAltura, "Raio de Visão (BFS k)", 2, 6, configuracao.raioVisao, true);
+        sliderMaxObstaculos = new Slider(colEsqX, inicioY + passoY * 4, sliderLargura, sliderAltura, "Limite de Obstáculos", 4, 25, configuracao.maxObstaculos, true);
+        sliderOrcamento = new Slider(colEsqX, inicioY + passoY * 5, sliderLargura, sliderAltura, "Orçamento de Desastre", 15, 45, configuracao.orcamentoDesastre, true);
 
         // Coluna Direita: Co-evolução
         sliderPopEntregador = new Slider(colDirX, inicioY, sliderLargura, sliderAltura, "População Entregadores", 10, 100, configuracao.tamPopEntregador, true);
         sliderPopObstaculo = new Slider(colDirX, inicioY + passoY, sliderLargura, sliderAltura, "População Obstáculos", 10, 100, configuracao.tamPopObstaculo, true);
         sliderGeracoes = new Slider(colDirX, inicioY + passoY * 2, sliderLargura, sliderAltura, "Gerações", 10, 500, configuracao.geracoes, true);
         sliderTaxaCrossover = new Slider(colDirX, inicioY + passoY * 3, sliderLargura, sliderAltura, "Taxa de Crossover", 0.0, 1.0, configuracao.taxaCrossover, false);
-        sliderTaxaMutacao = new Slider(colDirX, inicioY + passoY * 4, sliderLargura, sliderAltura, "Taxa de Mutação", 0.0, 0.5, configuracao.taxaMutacao, false);
+        sliderTaxaMutacao = new Slider(colDirX, inicioY + passoY * 4, sliderLargura, sliderAltura, "Taxa de Mutação", 0.05, 0.15, configuracao.taxaMutacao, false);
+        sliderSeed = new Slider(colDirX, inicioY + passoY * 5, sliderLargura, sliderAltura, "Semente Aleatória (Seed)", 1, 9999, configuracao.seed, true);
 
         sliders.addAll(List.of(
-                sliderLinhas, sliderColunas, sliderAtalhos, sliderRaioVisao, sliderOrcamento, sliderSeed,
-                sliderPopEntregador, sliderPopObstaculo, sliderGeracoes, sliderTaxaCrossover, sliderTaxaMutacao
+                sliderLinhas, sliderColunas, sliderAtalhos, sliderRaioVisao, sliderMaxObstaculos, sliderOrcamento,
+                sliderPopEntregador, sliderPopObstaculo, sliderGeracoes, sliderTaxaCrossover, sliderTaxaMutacao, sliderSeed
         ));
 
         float rodapeY = alturaTela - 78.0f;
@@ -178,6 +179,7 @@ public class TelaConfig {
         configuracao.tamPopEntregador = sliderPopEntregador.getValorInteiro();
         configuracao.tamPopObstaculo = sliderPopObstaculo.getValorInteiro();
         configuracao.geracoes = sliderGeracoes.getValorInteiro();
+        configuracao.maxObstaculos = sliderMaxObstaculos.getValorInteiro();
         configuracao.orcamentoDesastre = sliderOrcamento.getValorInteiro();
         configuracao.taxaCrossover = sliderTaxaCrossover.getValor();
         configuracao.taxaMutacao = sliderTaxaMutacao.getValor();
@@ -217,6 +219,7 @@ public class TelaConfig {
             sliderPopEntregador.setValor(carregada.tamPopEntregador);
             sliderPopObstaculo.setValor(carregada.tamPopObstaculo);
             sliderGeracoes.setValor(carregada.geracoes);
+            sliderMaxObstaculos.setValor(carregada.maxObstaculos);
             sliderOrcamento.setValor(carregada.orcamentoDesastre);
             sliderTaxaCrossover.setValor(carregada.taxaCrossover);
             sliderTaxaMutacao.setValor(carregada.taxaMutacao);

@@ -135,8 +135,12 @@ public final class AnalisadorConectividade {
             for (int i = obstaculosProcessados.size() - 1; i >= 0; i--) {
                 Obstaculo obs = obstaculosProcessados.get(i);
                 if (obs.tipo() == TipoObstaculo.BLOQUEIO) {
-                    bloqueadas.remove(obs.arestaId());
                     obstaculosProcessados.set(i, new Obstaculo(obs.arestaId(), obs.tickAtivacao(), TipoObstaculo.CONGESTIONAMENTO));
+                    // Recalcula o conjunto a partir dos bloqueios que SOBRAM (a mesma aresta pode aparecer mais de uma vez)
+                    bloqueadas = new HashSet<>();
+                    for (Obstaculo o2 : obstaculosProcessados) {
+                        if (o2.tipo() == TipoObstaculo.BLOQUEIO) bloqueadas.add(o2.arestaId());
+                    }
                     if (conecta(g, bloqueadas)) break;
                 }
             }

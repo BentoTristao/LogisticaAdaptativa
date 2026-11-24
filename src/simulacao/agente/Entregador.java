@@ -32,7 +32,7 @@ public class Entregador {
     private int recalculos;
     private int passosEmObstaculos;
     private double custoObstaculosUsados;
-    private double custoRotaOriginal;
+    private double[] pesosRotaNoPlanejamento = new double[0];
 
     private final Set<Integer> obstaculosContabilizados;
 
@@ -55,7 +55,6 @@ public class Entregador {
         this.recalculos = 0;
         this.passosEmObstaculos = 0;
         this.custoObstaculosUsados = 0.0;
-        this.custoRotaOriginal = 0.0;
         this.obstaculosContabilizados = new HashSet<>();
     }
 
@@ -89,13 +88,14 @@ public class Entregador {
             return true;
         }
 
-        // Disparo por aumento percentual no custo da rota remanescente (gene g5)
-        if (custoRotaOriginal > 0.0) {
-            double custoAtualRemanente = calcularCustoRemanescenteConhecido();
-            double aumento = (custoAtualRemanente - custoRotaOriginal) / custoRotaOriginal;
-            if (aumento > genoma.g5()) {
-                return true;
-            }
+        // Aumento percentual do custo do trecho restante, medido nas MESMAS arestas e na MESMA unidade (peso conhecido)
+        double ref = 0.0, atual = 0.0;
+        for (int i = indiceRota; i < rotaPlanejada.size(); i++) {
+            ref += pesosRotaNoPlanejamento[i];
+            atual += pesoConhecido[rotaPlanejada.get(i)];
+        }
+        if (ref > 0.0 && (atual - ref) / ref > genoma.g5()) {
+            return true;
         }
 
         return false;
@@ -110,7 +110,8 @@ public class Entregador {
 
         this.rotaPlanejada = novaRota;
         this.indiceRota = 0;
-        this.custoRotaOriginal = calcularCustoRemanescenteCustomizado(novaRota, 0, pesosCustomizados);
+        this.pesosRotaNoPlanejamento = new double[novaRota.size()];
+        for (int i = 0; i < novaRota.size(); i++) pesosRotaNoPlanejamento[i] = pesoConhecido[novaRota.get(i)];
         this.recalculos++;
     }
 
@@ -217,7 +218,7 @@ public class Entregador {
         return grau;
     }
 
-    private double calcularCustoRemanescenteConhecido() {
+/*    private double calcularCustoRemanescenteConhecido() {
         double total = 0.0;
         for (int i = indiceRota; i < rotaPlanejada.size(); i++) {
             total += pesoConhecido[rotaPlanejada.get(i)];
@@ -232,7 +233,7 @@ public class Entregador {
         }
         return total;
     }
-
+*/
     // Getters
     public int posicaoAtual() { return posicaoAtual; }
     public List<Integer> rotaPlanejada() { return List.copyOf(rotaPlanejada); }

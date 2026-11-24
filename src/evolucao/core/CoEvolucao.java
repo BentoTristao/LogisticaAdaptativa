@@ -84,7 +84,7 @@ public class CoEvolucao implements Runnable {
 
         List<Integer> rotaIdeal = Dijkstra.caminho(grafo, grafo.pesosBase(), grafo.verticeInicio(), grafo.verticeDestino());
         double tIdeal = Math.max(1.0, (double) rotaIdeal.size());
-        int maxTick = (int) (4 * tIdeal);
+        int maxTick = (int) tIdeal;
 
         for (int geracao = 1; geracao <= cfg.geracoes && rodando; geracao++) {
             checarPausa();
@@ -114,7 +114,7 @@ public class CoEvolucao implements Runnable {
                 for (int c = 0; c < cfg.confrontosPorIndividuo; c++) {
                     GenomaEntregador e = sortearOponenteEntregador();
                     ResultadoSimulacao res = motor.executar(grafo, e, o.plano(), cfg, rng.nextLong());
-                    somaFit += Aptidao.calcularFitnessObstaculo(res, tIdeal, 1.0, 2.0, 3.0);
+                    somaFit += Aptidao.calcularFitnessObstaculo(res, tIdeal, 1.0, 2.0, 0.5);
                 }
                 fitObs[j] = somaFit / cfg.confrontosPorIndividuo;
             }
@@ -164,9 +164,11 @@ public class CoEvolucao implements Runnable {
             popEntregador.add(GenomaEntregador.aleatorio(rng));
         }
 
+        List<Integer> rotaIdealInit = Dijkstra.caminho(grafo, grafo.pesosBase(), grafo.verticeInicio(), grafo.verticeDestino());
+        int maxTickInit = Math.max(1, rotaIdealInit.size());
         popObstaculo = new ArrayList<>();
         for (int i = 0; i < cfg.tamPopObstaculo; i++) {
-            GenomaObstaculos go = GenomaObstaculos.aleatorio(grafo, cfg.maxObstaculos, 100, rng);
+            GenomaObstaculos go = GenomaObstaculos.aleatorio(grafo, cfg.maxObstaculos, maxTickInit, rng);
             go = new GenomaObstaculos(AnalisadorConectividade.reparar(grafo, go.plano(), cfg.orcamentoDesastre));
             popObstaculo.add(go);
         }

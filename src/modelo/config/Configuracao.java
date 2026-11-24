@@ -20,7 +20,7 @@ public class Configuracao {
     public int orcamentoDesastre = 20;
     public double taxaCrossover = 0.8;
     public double taxaMutacao = 0.1;
-    public long seed = 42L;
+    public long seed = 6767L;
 
     /**
      * Verifica se os parâmetros estão dentro de intervalos utilizáveis.

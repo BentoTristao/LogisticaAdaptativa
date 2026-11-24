@@ -25,7 +25,8 @@ import java.util.function.Consumer;
  * e a thread de renderização do Processing.
  */
 public class TelaEvolucao implements CoEvolucaoListener {
-    private final GraficoLinha graficoFitness;
+    private final GraficoLinha graficoEntregador;
+    private final GraficoLinha graficoObstaculo;
     private final List<Botao> botoes = new ArrayList<>();
     private final List<EstatisticasGeracao> historico = new ArrayList<>();
     private final ConcurrentLinkedQueue<EstatisticasGeracao> filaRecebidos = new ConcurrentLinkedQueue<>();
@@ -41,11 +42,15 @@ public class TelaEvolucao implements CoEvolucaoListener {
 
     public TelaEvolucao(float larguraTela, float alturaTela, Consumer<EstatisticasGeracao> onVisualizarMelhorConfronto, Runnable onVoltarMenu) {
         float graficoX = 36.0f;
-        float graficoY = 74.0f;
-        float graficoW = larguraTela * 0.63f;
-        float graficoH = alturaTela - 170.0f;
+        float graficoY = 66.0f;
+        float graficoW = larguraTela * 0.54f;
+        float alturaTotalGraficos = alturaTela - 174.0f;
+        float gapGraficos = 14.0f;
+        float graficoH = (alturaTotalGraficos - gapGraficos) / 2.0f;
 
-        this.graficoFitness = new GraficoLinha(graficoX, graficoY, graficoW, graficoH, "Fitness por Geração (Entregadores vs. Obstáculos)");
+        this.graficoEntregador = new GraficoLinha(graficoX, graficoY, graficoW, graficoH, "Fitness por Geração — Entregadores", "Melhor da Geração", 80, 220, 140, "Média da População", 155, 238, 190);
+        this.graficoEntregador.setValorMinimoEixoY(1100.0);
+        this.graficoObstaculo = new GraficoLinha(graficoX, graficoY + graficoH + gapGraficos, graficoW, graficoH, "Fitness por Geração — Obstáculos", "Melhor da Geração", 255, 110, 110, "Média da População", 255, 180, 135);
 
         float rodapeY = alturaTela - 72.0f;
         float btnW = 175.0f;
@@ -76,7 +81,8 @@ public class TelaEvolucao implements CoEvolucaoListener {
         this.coEvolucao = coEvolucao;
         this.historico.clear();
         this.filaRecebidos.clear();
-        this.graficoFitness.limpar();
+        this.graficoEntregador.limpar();
+        this.graficoObstaculo.limpar();
         this.ultimaEstatistica = null;
         this.evolucaoConcluida = false;
         this.mensagemFeedback = "";
@@ -91,7 +97,8 @@ public class TelaEvolucao implements CoEvolucaoListener {
         if (new File("data/fundo_evolucao.png").exists()) {
             imagemFundo = p.loadImage("data/fundo_evolucao.png");
         }
-        graficoFitness.carregarFundo(p, "data/fundo_grafico.png");
+        graficoEntregador.carregarFundo(p, "data/fundo_grafico.png");
+        graficoObstaculo.carregarFundo(p, "data/fundo_grafico.png");
 
         for (Botao b : botoes) {
             b.carregarImagens(p, "data/btn_normal.png", "data/btn_hover.png");
@@ -126,12 +133,13 @@ public class TelaEvolucao implements CoEvolucaoListener {
         p.textAlign(PConstants.LEFT, PConstants.CENTER);
         p.fill(240, 244, 248);
         p.textSize(24);
-        p.text("Painel de Co-evolução Competitiva", 36.0f, 36.0f);
+        p.text("Painel de Co-evolução Competitiva", 36.0f, 34.0f);
 
-        graficoFitness.desenhar(p);
+        graficoEntregador.desenhar(p);
+        graficoObstaculo.desenhar(p);
 
-        float painelX = 36.0f + p.width * 0.63f + 28.0f;
-        float painelY = 82.0f;
+        float painelX = 36.0f + p.width * 0.54f + 24.0f;
+        float painelY = 66.0f;
         desenharTelemetria(p, painelX, painelY);
 
         if (!mensagemFeedback.isEmpty()) {
@@ -152,70 +160,123 @@ public class TelaEvolucao implements CoEvolucaoListener {
         EstatisticasGeracao est;
         while ((est = filaRecebidos.poll()) != null) {
             historico.add(est);
-            graficoFitness.adicionarPonto(est);
+            graficoEntregador.adicionarPonto(est.geracao(), est.melhorEntregador(), est.mediaEntregador());
+            graficoObstaculo.adicionarPonto(est.geracao(), est.melhorObstaculo(), est.mediaObstaculo());
         }
     }
 
     private void desenharTelemetria(PApplet p, float px, float py) {
         p.textAlign(PConstants.LEFT, PConstants.TOP);
         float linhaY = py;
-        float passo = 28.0f;
 
         p.fill(110, 210, 255);
         p.textSize(17);
-        p.text("Telemetria da Geração", px, linhaY);
-        linhaY += passo * 1.3f;
+        p.text("Legenda e Telemetria da Geração", px, linhaY);
+        linhaY += 26.0f;
 
-        String statusTexto = evolucaoConcluida? "Concluída": (coEvolucao != null && coEvolucao.estaPausado()? "Pausada": "Em execução");
-
-        p.fill(225, 232, 240);
-        p.textSize(14);
-        p.text("Status: " + statusTexto, px, linhaY);
-        linhaY += passo;
+        String statusTexto = evolucaoConcluida ? "Concluída" : (coEvolucao != null && coEvolucao.estaPausado() ? "Pausada" : "Em execução");
 
         EstatisticasGeracao est = ultimaEstatistica;
         if (est == null) {
+            p.fill(225, 232, 240);
+            p.textSize(13);
+            p.text("Status: " + statusTexto, px, linhaY);
+            linhaY += 22.0f;
             p.fill(160, 170, 185);
             p.text("Inicializando populações...", px, linhaY);
             return;
         }
 
-        p.text("Geração Atual: " + est.geracao(), px, linhaY);
-        linhaY += passo * 1.3f;
+        p.fill(225, 232, 240);
+        p.textSize(13);
+        p.text("Status: " + statusTexto + "   |   Geração Atual: " + est.geracao(), px, linhaY);
+        linhaY += 28.0f;
 
+        // 1. Gráfico Superior: Entregadores
         p.fill(80, 220, 140);
-        p.text(String.format(Locale.US, "Melhor Entregador: %.2f", est.melhorEntregador()), px, linhaY);
-        linhaY += passo;
-        p.fill(170, 235, 195);
-        p.text(String.format(Locale.US, "Média Entregador: %.2f", est.mediaEntregador()), px, linhaY);
-        linhaY += passo * 1.3f;
+        p.textSize(14);
+        p.text("1. Entregadores (Gráfico Superior)", px, linhaY);
+        linhaY += 19.0f;
 
+        p.fill(175, 186, 202);
+        p.textSize(11);
+        p.text("Aptidão (pts): rapidez na entrega menos recálculos e atrasos.", px, linhaY);
+        linhaY += 18.0f;
+
+        desenharLinhaIndicadora(p, px, linhaY + 7.0f, 80, 220, 140, 2.6f);
+        p.fill(230, 238, 245);
+        p.textSize(12);
+        p.text(String.format(Locale.US, "Melhor da geração: %.2f pts (líder atual)", est.melhorEntregador()), px + 22.0f, linhaY);
+        linhaY += 19.0f;
+
+        desenharLinhaIndicadora(p, px, linhaY + 7.0f, 155, 238, 190, 1.8f);
+        p.fill(205, 220, 232);
+        p.text(String.format(Locale.US, "Média da população: %.2f pts (desempenho geral)", est.mediaEntregador()), px + 22.0f, linhaY);
+        linhaY += 26.0f;
+
+        // 2. Gráfico Inferior: Obstáculos
         p.fill(255, 110, 110);
-        p.text(String.format(Locale.US, "Melhor Obstáculo: %.2f", est.melhorObstaculo()), px, linhaY);
-        linhaY += passo;
-        p.fill(255, 185, 150);
-        p.text(String.format(Locale.US, "Média Obstáculo: %.2f", est.mediaObstaculo()), px, linhaY);
-        linhaY += passo * 1.4f;
+        p.textSize(14);
+        p.text("2. Obstáculos (Gráfico Inferior)", px, linhaY);
+        linhaY += 19.0f;
 
+        p.fill(175, 186, 202);
+        p.textSize(11);
+        p.text("Aptidão (pts): atraso imposto ao entregador menos custo gasto.", px, linhaY);
+        linhaY += 18.0f;
+
+        desenharLinhaIndicadora(p, px, linhaY + 7.0f, 255, 110, 110, 2.6f);
+        p.fill(230, 238, 245);
+        p.textSize(12);
+        p.text(String.format(Locale.US, "Melhor da geração: %.2f pts (plano mais eficaz)", est.melhorObstaculo()), px + 22.0f, linhaY);
+        linhaY += 19.0f;
+
+        desenharLinhaIndicadora(p, px, linhaY + 7.0f, 255, 180, 135, 1.8f);
+        p.fill(205, 220, 232);
+        p.text(String.format(Locale.US, "Média da população: %.2f pts (desempenho geral)", est.mediaObstaculo()), px + 22.0f, linhaY);
+        linhaY += 26.0f;
+
+        // 3. Genes do Melhor Entregador
         GenomaEntregador g = est.melhorGenomaEntregador();
         p.fill(110, 210, 255);
-        p.text("Melhor Genoma (Entregador):", px, linhaY);
-        linhaY += passo;
+        p.textSize(14);
+        p.text("Estratégia do Melhor Entregador (Genes)", px, linhaY);
+        linhaY += 20.0f;
 
         p.fill(220, 228, 238);
-        p.textSize(13);
-        p.text(String.format(Locale.US, "g1 (Custo): %.2f", g.g1()), px, linhaY);
-        linhaY += 22.0f;
-        p.text(String.format(Locale.US, "g2 (Heurística A*): %.2f", g.g2()), px, linhaY);
-        linhaY += 22.0f;
-        p.text(String.format(Locale.US, "g3 (Aversão Risco): %.2f", g.g3()), px, linhaY);
-        linhaY += 22.0f;
-        p.text(String.format(Locale.US, "g4 (Pref. Hubs): %.2f", g.g4()), px, linhaY);
-        linhaY += 22.0f;
-        p.text(String.format(Locale.US, "g5 (Limiar Recálc.): %.1f%%", g.g5() * 100.0), px, linhaY);
-        linhaY += passo;
+        p.textSize(12);
+        p.text(String.format(Locale.US, "g1 = %.2f — Peso do tempo/custo das arestas", g.g1()), px, linhaY);
+        linhaY += 19.0f;
+        p.text(String.format(Locale.US, "g2 = %.2f — Foco da heurística A* até o destino", g.g2()), px, linhaY);
+        linhaY += 19.0f;
+        p.text(String.format(Locale.US, "g3 = %.2f — Aversão a vias com risco/atraso", g.g3()), px, linhaY);
+        linhaY += 19.0f;
+        p.text(String.format(Locale.US, "g4 = %.2f — Preferência por cruzamentos (hubs)", g.g4()), px, linhaY);
+        linhaY += 19.0f;
+        p.text(String.format(Locale.US, "g5 = %.1f%% — Tolerância de atraso p/ recalcular rota", g.g5() * 100.0), px, linhaY);
+        linhaY += 25.0f;
 
-        p.text("Obstáculos no Melhor Plano: " + est.melhorPlano().obstaculos().size(), px, linhaY);
+        // 4. Melhor Plano de Obstáculos
+        p.fill(110, 210, 255);
+        p.textSize(14);
+        p.text("Melhor Plano de Obstáculos", px, linhaY);
+        linhaY += 20.0f;
+
+        p.fill(220, 228, 238);
+        p.textSize(12);
+        p.text("Eventos ativos: " + est.melhorPlano().obstaculos().size() + " obstáculo(s) programado(s)", px, linhaY);
+        linhaY += 19.0f;
+        p.text("Orçamento usado: " + est.melhorPlano().custoTotal() + " pts de desastre", px, linhaY);
+        linhaY += 18.0f;
+        p.fill(175, 186, 202);
+        p.textSize(11);
+        p.text("Custos: Desvio (1pt), Congestionamento (2pt), Bloqueio (3pt)", px, linhaY);
+    }
+
+    private void desenharLinhaIndicadora(PApplet p, float x1, float y1, int r, int g, int b, float espessura) {
+        p.stroke(r, g, b);
+        p.strokeWeight(espessura);
+        p.line(x1, y1, x1 + 16.0f, y1);
     }
 
     private void alternarPausa() {
