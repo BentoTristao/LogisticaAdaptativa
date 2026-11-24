@@ -29,7 +29,7 @@ public class CoEvolucao implements Runnable {
     private final MotorSimulacao motor;
     private final CoEvolucaoListener listener;
     private final Random rng;
-   private ResultadoSimulacao resultadoGeracao1;
+    private EstatisticasGeracao estatisticaGeracao1;
 
     private Thread thread;
     private volatile boolean rodando = false;
@@ -125,22 +125,9 @@ public class CoEvolucao implements Runnable {
             // 2. REGISTRO NO HALL OF FAME
             int melhorEntIdx = obterMelhorIndice(fitEnt);
             int melhorObsIdx = obterMelhorIndice(fitObs);
-        }
 
             hofEntregador.adicionar(popEntregador.get(melhorEntIdx), fitEnt[melhorEntIdx]);
             hofObstaculo.adicionar(popObstaculo.get(melhorObsIdx), fitObs[melhorObsIdx]);
-if (geracao == 1) {
-    this.resultadoGeracao1 = motor.executar(
-        grafo,
-        popEntregador.get(melhorEntIdx),
-        popObstaculo.get(melhorObsIdx).plano(),
-        cfg,
-        cfg.seed
-    );
-}
-
-public ResultadoSimulacao getReplayGeracao1() {
-    return replayGeracao1;
 
             // Agrega a frequência de obstáculos por aresta para visualização em heatmap
             int[] bloqueiosPorAresta = new int[grafo.numArestas()];
@@ -152,21 +139,26 @@ public ResultadoSimulacao getReplayGeracao1() {
                 });
             }
 
+            double mediaEnt = calcularMedia(fitEnt);
+            double mediaObs = calcularMedia(fitObs);
+
+            EstatisticasGeracao est = new EstatisticasGeracao(
+                    geracao,
+                    fitEnt[melhorEntIdx],
+                    mediaEnt,
+                    fitObs[melhorObsIdx],
+                    mediaObs,
+                    popEntregador.get(melhorEntIdx),
+                    popObstaculo.get(melhorObsIdx).plano(),
+                    bloqueiosPorAresta
+            );
+
+            if (geracao == 1) {
+                this.estatisticaGeracao1 = est;
+            }
+
             // Notifica Listener com estatísticas da geração atual
             if (listener != null) {
-                double mediaEnt = calcularMedia(fitEnt);
-                double mediaObs = calcularMedia(fitObs);
-
-                EstatisticasGeracao est = new EstatisticasGeracao(
-                        geracao,
-                        fitEnt[melhorEntIdx],
-                        mediaEnt,
-                        fitObs[melhorObsIdx],
-                        mediaObs,
-                        popEntregador.get(melhorEntIdx),
-                        popObstaculo.get(melhorObsIdx).plano(),
-                        bloqueiosPorAresta
-                );
                 listener.aoFimDaGeracao(est);
             }
 
@@ -219,7 +211,7 @@ public ResultadoSimulacao getReplayGeracao1() {
     private List<GenomaEntregador> evoluirEntregadores(List<GenomaEntregador> pop, double[] fits) {
         List<GenomaEntregador> nova = new ArrayList<>();
         List<Integer> ordenados = obterIndicesOrdenadosDecrescente(fits);
-        
+
         // Elitismo: preserva os 2 melhores
         nova.add(pop.get(ordenados.get(0)));
         if (ordenados.size() > 1) nova.add(pop.get(ordenados.get(1)));
@@ -241,7 +233,7 @@ public ResultadoSimulacao getReplayGeracao1() {
     private List<GenomaObstaculos> evoluirObstaculos(List<GenomaObstaculos> pop, double[] fits, int maxTick) {
         List<GenomaObstaculos> nova = new ArrayList<>();
         List<Integer> ordenados = obterIndicesOrdenadosDecrescente(fits);
-        
+
         // Elitismo: preserva os 2 melhores
         nova.add(pop.get(ordenados.get(0)));
         if (ordenados.size() > 1) nova.add(pop.get(ordenados.get(1)));
@@ -297,8 +289,11 @@ public ResultadoSimulacao getReplayGeracao1() {
         for (double v : vals) s += v;
         return vals.length > 0 ? s / vals.length : 0;
     }
-    public ResultadoSimulacao getResultadoGeracao1() {
-    return resultadoGeracao1;
+
+    public EstatisticasGeracao getEstatisticaGeracao1() {
+        return estatisticaGeracao1;
+    }
+
     public boolean estaRodando() { return rodando; }
     public boolean estaPausado() { return pausado; }
 }
