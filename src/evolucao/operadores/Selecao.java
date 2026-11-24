@@ -46,4 +46,4 @@ public final class Selecao {
 
         return populacao.get(melhorIndice);
     }
-}
+}//

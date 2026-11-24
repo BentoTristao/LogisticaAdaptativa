@@ -63,4 +63,4 @@ public class HallOfFame<T> {
     }
 
     public record EntradaHoF<T>(T individuo, double fitness) {}
-}
+}//
