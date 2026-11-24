@@ -135,7 +135,7 @@ public class VisualizadorSimulacao {
         }
 
         for (Botao b : botoes) {
-            b.carregarImagens(p, "data/btn_normal.png", "data/btn_hover.png");
+            b.carregarImagemHover(p, "data/btn_hover.png");
         }
 
         camadaGrafo.inicializarAssets(p);
